@@ -1,0 +1,21 @@
+{
+  "name": "security-tests",
+  "version": "1.0.0",
+  "description": "Security testing suite for Employee Feedback Application",
+  "main": "security-test-suite.js",
+  "scripts": {
+    "test": "node security-test-suite.js"
+  },
+  "keywords": [
+    "security",
+    "testing",
+    "audit"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "colors": "^1.4.0"
+  }
+}
+

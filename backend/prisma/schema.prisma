@@ -1,0 +1,379 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Change to "mysql" if using MySQL
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  firstName         String
+  lastName          String
+  password          String
+  role              UserRole  @default(EMPLOYEE)
+  position          String?
+  managerId         String?
+  manager           User?     @relation("ManagerToEmployee", fields: [managerId], references: [id])
+  employees         User[]    @relation("ManagerToEmployee")
+  avatar            String?
+  isActive          Boolean   @default(true)
+  lastLoginAt       DateTime?
+  passwordResetToken String?
+  passwordResetExpires DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  sentColleagueFeedback      ColleagueFeedback[] @relation("ColleagueFeedbackSender")
+  receivedColleagueFeedback  ColleagueFeedback[] @relation("ColleagueFeedbackReceiver")
+  sentManagerFeedback        ManagerFeedback[] @relation("ManagerFeedbackSender")
+  receivedManagerFeedback    ManagerFeedback[] @relation("ManagerFeedbackReceiver")
+  selfAssessmentsV2 SelfAssessmentV2[]
+  quarterlyPerformances      QuarterlyPerformance[]
+  achievementsAndObservations AchievementsAndObservations[]
+  createdAchievements        AchievementsAndObservations[] @relation("AchievementCreator")
+  jiraUserMappings  JiraUserMapping[] @relation("JiraUserMapping")
+  userTeams         UserTeam[]
+  userBusinessUnits UserBusinessUnit[]
+  monthlyAttendances MonthlyAttendance[]
+  sessions         Session[]
+
+  @@map("users")
+}
+
+model ColleagueFeedback {
+  id                    String        @id @default(cuid())
+  senderId              String
+  receiverId            String
+  feedbackType          FeedbackType  @default(COLLEAGUE)
+  rating                Int?          // 1-5 scale
+  year                  String        // Year for the feedback period
+  quarter               String        // Quarter for the feedback period (Q1, Q2, Q3, Q4)
+  isAnonymous           Boolean       @default(false)
+  isPublic              Boolean       @default(false)
+  status                FeedbackStatus @default(PENDING)
+  feedbackProvider      String        // Name of the feedback provider (or "Anonymous")
+  appreciation          String?       // What do you appreciate most about this colleague
+  improvement           String?       // What could this colleague improve
+  wouldWorkAgain        Boolean?      // Would you like to work with this colleague in future projects
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  // Relations
+  sender                User          @relation("ColleagueFeedbackSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver              User          @relation("ColleagueFeedbackReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("colleague_feedback")
+}
+
+model ManagerFeedback {
+  id                    String        @id @default(cuid())
+  senderId              String
+  receiverId            String
+  year                  String
+  quarter               String
+  feedbackProvider      String
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  // Manager-specific fields
+  managerSatisfaction   String?
+  leadershipStyle       Json?
+  careerGrowth          Json?
+  coachingCaring        Json?
+  managerOverallRating  Int?
+  appreciation          String?       // Appreciation feedback about the manager
+  improvementAreas     String?       // Areas for improvement
+
+  // Relations
+  sender                User          @relation("ManagerFeedbackSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver              User          @relation("ManagerFeedbackReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("manager_feedback")
+}
+
+model SelfAssessmentV2 {
+  id                  String            @id @default(cuid())
+  userId              String
+  year                Int
+  quarter             Quarter?
+  rating              Int?              // 1-5 scale
+  achievements        String?
+  improvements        String?
+  satisfactionLevel   SatisfactionLevel?
+  aspirations         String?
+  suggestionsForTeam  String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  // Relations
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Constraints
+  @@unique([userId, year, quarter])
+  
+  // Indexes
+  @@index([userId])
+  @@index([userId, year, quarter])
+  @@index([year, quarter])
+  @@index([rating])
+  @@index([satisfactionLevel])
+  
+  @@map("self_assessments_v2")
+}
+
+model QuarterlyPerformance {
+  id                    String   @id @default(cuid())
+  userId                String
+  quarter               String   // Q1, Q2, Q3, Q4
+  year                  Int      // e.g., 2024
+  rating                Int?     // 1-5 scale rating
+  isCritical            Boolean  @default(false)
+  managerComment        String?
+  hrbpComment           String?
+  nextActionPlanManager String?
+  nextActionPlanHrbp    String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("quarterly_performance")
+}
+
+model AchievementsAndObservations {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime
+  achievement String
+  observation String
+  createdBy   String   // ID of the user who created this entry (usually manager)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creator     User     @relation("AchievementCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@map("achievements_and_observations")
+}
+
+model JiraTicket {
+  jiraId            String   @id // Jira ticket ID (e.g., "PROJ-123") - Primary key
+  link              String   // HTTP link to the Jira ticket
+  title             String   // Title of the Jira ticket
+  priority          String?  // Priority of the ticket
+  status            String?  // Current status of the ticket (e.g., "Live", "Done", "Cancelled")
+  createDate        DateTime? // Date when ticket was created
+  endDate           DateTime? // Date when ticket was resolved
+  originalEstimate  Int?     // Original estimate in seconds
+  components        String[] // List of components in the ticket
+  dueDate           DateTime? // Any due date set in the ticket
+  assignee          String?  // Full name of assignee
+  reporter          String?  // Full name of reporter
+  inProgressTime    Int?     // Total time in seconds when ticket was in-progress
+  blockedTime       Int?     // Total time in seconds the ticket was blocked
+  reviewTime        Int?     // Total time in seconds the ticket was in review
+  promotionTime     Int?     // Total time in seconds the ticket was in promotion phase
+  refinementTime    Int?     // Total time in seconds the ticket was in refinement phase
+  readyForDevelopmentTime Int? // Total time in seconds the ticket was ready for development
+  unmappedStatuses  String[] // List of statuses that are not mapped to any category
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  // Note: assigneeId field removed - user mapping now handled via assigneeAccountId or manual mapping
+
+  @@map("jira_tickets")
+}
+
+model JiraUserMapping {
+  id        String   @id @default(cuid())
+  jiraUsername String   // The username from Jira (e.g., "John Doe", "john.doe@company.com")
+  userId    String   // Reference to the system user
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation("JiraUserMapping", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ensure unique mapping per Jira username
+  @@unique([jiraUsername])
+  @@map("jira_user_mappings")
+}
+
+model JiraConfiguration {
+  id                String   @id @default(cuid())
+  name              String   // Configuration name (e.g., "Project A Jira")
+  serverUrl         String   // Jira server URL
+  username          String   // Jira username
+  apiToken          String   // Jira API token
+  jql               String   // JQL query for filtering tickets
+  inProgressStatuses String[] // List of statuses considered as "In Progress"
+  blockedStatuses   String[] // List of statuses considered as "Blocked"
+  reviewStatuses    String[] // List of statuses considered as "Review"
+  promotionStatuses String[] // List of statuses considered as "Promotion"
+  refinementStatuses String[] // List of statuses considered as "Refinement"
+  readyForDevelopmentStatuses String[] // List of statuses considered as "Ready for Development"
+  ticketClosesStatuses String[] // List of statuses considered as "Ticket Closes"
+  isActive          Boolean  @default(true) // Whether this configuration is active
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("jira_configurations")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  EMPLOYEE
+}
+
+enum FeedbackType {
+  COLLEAGUE
+  MANAGER
+}
+
+enum FeedbackStatus {
+  PENDING
+  ACKNOWLEDGED
+  COMPLETED
+  ARCHIVED
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userTeams   UserTeam[]
+
+  @@map("teams")
+}
+
+model UserTeam {
+  id        String   @id @default(cuid())
+  userId    String
+  teamId    String
+  joinedAt  DateTime @default(now())
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@map("user_teams")
+}
+
+enum Quarter {
+  Q1
+  Q2
+  Q3
+  Q4
+  ANNUAL
+}
+
+enum SatisfactionLevel {
+  VERY_SATISFIED
+  SOMEWHAT_SATISFIED
+  NEITHER
+  SOMEWHAT_DISSATISFIED
+  VERY_DISSATISFIED
+}
+
+model BusinessUnit {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userBusinessUnits UserBusinessUnit[]
+
+  @@map("business_units")
+}
+
+model UserBusinessUnit {
+  id             String        @id @default(cuid())
+  userId         String
+  businessUnitId String
+  joinedAt       DateTime      @default(now())
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessUnit   BusinessUnit  @relation(fields: [businessUnitId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessUnitId])
+  @@map("user_business_units")
+}
+
+model MonthlyAttendance {
+  id                    String   @id @default(cuid())
+  userId                String
+  month                 Int      // 1-12 (January = 1, December = 12)
+  year                  Int      // e.g., 2024
+  workingDays           Int      // Number of working days in the month
+  presentInOffice      Int      // Number of days user came to office
+  leavesAvailed         Float    @default(0) // Number of leaves availed (can be decimal like 0.5, 2.5)
+  leaveNotificationsInTeamsChannel Float @default(0) // Number of leaves as notified by users during the month in teams chats
+  attendancePercentage  Float?   // Calculated: (presentInOffice / (workingDays - leavesAvailed)) * 100
+  weeklyCompliance      Boolean? // true = yes, false = no (null = not set)
+  exceptionApproved     Boolean? // true = yes, false = no (null = not set)
+  reasonForNonCompliance String? // Reason for not coming to office / Manager comments
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ensure unique attendance record per user per month/year
+  @@unique([userId, month, year])
+  @@index([userId])
+  @@index([userId, year, month])
+  @@index([year, month])
+  
+  @@map("monthly_attendance")
+}
+
+model Session {
+  id              String   @id @default(cuid())
+  userId          String
+  token           String   // JWT token associated with this session
+  ipAddress       String?  // IP address of the user
+  userAgent       String?  // User agent string
+  lastActivityAt  DateTime @default(now()) // Last activity timestamp
+  expiresAt       DateTime // Session expiration time (2 hours from last activity)
+  isActive        Boolean  @default(true) // Whether the session is active
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([userId])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@index([userId, isActive])
+  
+  @@map("sessions")
+} 

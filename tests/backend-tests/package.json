@@ -1,0 +1,31 @@
+{
+  "name": "backend-tests",
+  "version": "1.0.0",
+  "description": "Backend unit and integration tests for Employee Feedback Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test-runner.js",
+    "test:logging": "node test-runner.js --suite logging",
+    "test:database": "node test-runner.js --suite database",
+    "test:api": "node test-runner.js --suite api",
+    "setup": "node setup.js",
+    "postinstall": "npm run setup || echo 'Note: Prisma generation may have failed. Run \"npm run setup\" manually if needed.'"
+  },
+  "keywords": [
+    "testing",
+    "backend",
+    "unit-tests",
+    "integration-tests"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.12.0",
+    "axios": "^1.6.0",
+    "colors": "^1.4.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "prisma": "^6.12.0"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "playwright-tests",
+  "version": "1.0.0",
+  "description": "Playwright E2E tests for Performance360",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:employee": "playwright test --project=employee",
+    "test:manager": "playwright test --project=manager",
+    "test:admin": "playwright test --project=admin",
+    "test:registration-login": "playwright test tests/employee/user-registration-login.spec.js",
+    "test:colleague-feedback": "playwright test tests/employee/colleague-feedback.spec.js",
+    "test:manager-feedback:headed": "playwright test tests/employee/manager-feedback.spec.js --headed",
+    "test:self-assessment": "playwright test tests/employee/self-assessment.spec.js",
+    "test:self-assessment:headed": "playwright test tests/employee/self-assessment.spec.js --headed",
+    "create-excel-template": "node utils/create-excel-template.js",
+    "create-user-templates": "node utils/create-user-registration-templates.js",
+    "bulk-self-assessment": "node bulk-uploader/self-assessment-bulk.js",
+    "test:all": "playwright test --project=full",
+    "test:all:headed": "playwright test --headed",
+    "test:all:ui": "playwright test --ui",
+    "test:all:debug": "playwright test --debug",
+    "report": "playwright show-report",
+    "install-browsers": "playwright install"
+  },
+  "keywords": ["playwright", "e2e", "testing"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "xlsx": "^0.18.5"
+  }
+} 

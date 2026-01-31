@@ -1,0 +1,25 @@
+# Assessment Data Excel Template
+
+This file should be replaced with an actual Excel file (.xlsx) containing the following columns:
+
+## Required Columns:
+- **Quarter**: Q1, Q2, Q3, or Q4
+- **Year**: 4-digit year (e.g., 2024)
+- **Rating**: 1-5 rating scale
+- **Achievements**: Text description of achievements
+- **Improvements**: Text description of areas for improvement
+- **Satisfaction**: Satisfaction level (Very Satisfied, Somewhat Satisfied, etc.)
+- **Team Changes**: Suggestions for team improvements
+
+## Sample Data:
+| Quarter | Year | Rating | Achievements | Improvements | Satisfaction | Team Changes |
+|---------|------|--------|--------------|--------------|--------------|--------------|
+| Q1 | 2024 | 4 | Completed major feature implementation | Need to improve documentation | Very Satisfied | Implement better code review process |
+| Q2 | 2024 | 5 | Led successful project delivery | Could enhance presentation skills | Very Satisfied | Add more training sessions |
+| Q3 | 2024 | 4 | Successfully implemented new technologies | Need to work on strategic thinking | Somewhat Satisfied | Implement better project tracking tools |
+
+## Usage:
+1. Create an Excel file with the above structure
+2. Name it `assessment-data.xlsx`
+3. Place it in the `playwright-tests/tests/` directory
+4. The test will automatically read this file and use the data for testing 

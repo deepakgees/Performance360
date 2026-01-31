@@ -1,0 +1,4 @@
+Email,Working Days,Present in Office,Leaves Availed,Leave Notifications in Teams Channel,Weekly Compliance,Exception Approved
+user1@example.com,22,20,2.5,1.0,Yes,No
+user2@example.com,22,18,1.0,0.5,No,Yes
+user3@example.com,22,21,0.5,0.0,Yes,No

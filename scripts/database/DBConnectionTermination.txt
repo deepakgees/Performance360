@@ -1,0 +1,5 @@
+-- Run this from a different database (like 'postgres'), NOT from 'feedback':
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE datname = 'feedback_app_restore'
+  AND pid <> pg_backend_pid();

@@ -1,0 +1,120 @@
+{
+  "passed": [
+    {
+      "testName": "GET /api/users without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.868Z"
+    },
+    {
+      "testName": "GET /api/users/me without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.872Z"
+    },
+    {
+      "testName": "GET /api/assessments without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.875Z"
+    },
+    {
+      "testName": "GET /api/colleague-feedback/received without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.878Z"
+    },
+    {
+      "testName": "GET /api/manager-feedback/received without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.880Z"
+    },
+    {
+      "testName": "GET /api/quarterly-performance/someUserId without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.884Z"
+    },
+    {
+      "testName": "GET /api/achievements-observations/someUserId without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.887Z"
+    },
+    {
+      "testName": "GET /api/monthly-attendance/someUserId without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.890Z"
+    },
+    {
+      "testName": "POST /api/assessments without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.894Z"
+    },
+    {
+      "testName": "POST /api/colleague-feedback without authentication",
+      "passed": true,
+      "severity": "critical",
+      "details": "Expected 401/403, got 401",
+      "timestamp": "2026-01-20T13:08:33.897Z"
+    },
+    {
+      "testName": "Access with invalid token: invalid.token.here...",
+      "passed": true,
+      "severity": "high",
+      "details": "Invalid tokens should be rejected. Status: 403",
+      "timestamp": "2026-01-20T13:08:33.903Z"
+    },
+    {
+      "testName": "Access with invalid token: Bearer invalid...",
+      "passed": true,
+      "severity": "high",
+      "details": "Invalid tokens should be rejected. Status: 403",
+      "timestamp": "2026-01-20T13:08:33.906Z"
+    },
+    {
+      "testName": "Access with invalid token: eyJhbGciOiJIUzI1NiIs...",
+      "passed": true,
+      "severity": "high",
+      "details": "Invalid tokens should be rejected. Status: 403",
+      "timestamp": "2026-01-20T13:08:33.910Z"
+    },
+    {
+      "testName": "Access with invalid token: null",
+      "passed": true,
+      "severity": "high",
+      "details": "Invalid tokens should be rejected. Status: 401",
+      "timestamp": "2026-01-20T13:08:33.912Z"
+    },
+    {
+      "testName": "Access with invalid token: null",
+      "passed": true,
+      "severity": "high",
+      "details": "Invalid tokens should be rejected. Status: 401",
+      "timestamp": "2026-01-20T13:08:33.914Z"
+    }
+  ],
+  "failed": [],
+  "warnings": [
+    {
+      "testName": "Rate limiting on login endpoint",
+      "passed": false,
+      "severity": "medium",
+      "details": "Rate limiting may not be implemented",
+      "timestamp": "2026-01-20T13:08:33.977Z"
+    }
+  ],
+  "critical": []
+}
