@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ColleagueFeedbackPastTable from '../components/ColleagueFeedbackPastTable';
 import ToastNotification from '../components/Notification';
 import { useAuth } from '../contexts/AuthContext';
@@ -144,37 +144,7 @@ const ColleagueFeedback: React.FC = () => {
     wouldWorkAgain: true,
   });
 
-  // Load sent feedbacks and users on component mount
-  useEffect(() => {
-    loadSentFeedbacks();
-    loadUsers();
-  }, []);
-
-  // Update feedbackProvider when isAnonymous changes
-  useEffect(() => {
-    if (user) {
-      setNewFeedback(prev => ({
-        ...prev,
-        feedbackProvider: prev.isAnonymous
-          ? 'Anonymous'
-          : `${user.firstName} ${user.lastName}`,
-      }));
-    }
-  }, [newFeedback.isAnonymous, user]);
-
-  const loadSentFeedbacks = async () => {
-    try {
-      setLoading(true);
-      const response = await feedbackAPI.getColleagueSent();
-      setSentFeedbacks(response.data);
-    } catch (error) {
-      console.error('Error loading sent feedbacks:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     try {
       // Get current user's business unit IDs first
       const currentUserResponse = await usersAPI.getById(user!.id);
@@ -264,7 +234,37 @@ const ColleagueFeedback: React.FC = () => {
     } catch (error) {
       console.error('Error loading users:', error);
     }
+  }, [user]);
+
+  const loadSentFeedbacks = async () => {
+    try {
+      setLoading(true);
+      const response = await feedbackAPI.getColleagueSent();
+      setSentFeedbacks(response.data);
+    } catch (error) {
+      console.error('Error loading sent feedbacks:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Load sent feedbacks and users on component mount
+  useEffect(() => {
+    loadSentFeedbacks();
+    loadUsers();
+  }, [loadUsers]);
+
+  // Update feedbackProvider when isAnonymous changes
+  useEffect(() => {
+    if (user) {
+      setNewFeedback(prev => ({
+        ...prev,
+        feedbackProvider: prev.isAnonymous
+          ? 'Anonymous'
+          : `${user.firstName} ${user.lastName}`,
+      }));
+    }
+  }, [newFeedback.isAnonymous, user]);
 
   const handleInputChange = (
     field: keyof NewFeedback,

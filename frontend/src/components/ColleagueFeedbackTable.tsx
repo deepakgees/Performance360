@@ -32,7 +32,7 @@ interface ColleagueFeedbackTableProps {
 const ColleagueFeedbackTable: React.FC<ColleagueFeedbackTableProps> = ({
   feedbacks,
   loading,
-  title = 'Feedbacks Received as Colleague',
+  title: _title = 'Feedbacks Received as Colleague',
 }) => {
   if (loading) {
     return (

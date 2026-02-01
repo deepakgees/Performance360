@@ -50,36 +50,36 @@ interface ManagerGroup {
   reports: IndirectReport[];
 }
 
-interface Feedback {
-  id: string;
-  sender: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-  };
-  year: string;
-  quarter: string;
-  status: string;
-  createdAt: string;
-  appreciation?: string;
-  improvement?: string;
-  wouldWorkAgain?: boolean;
-  team?: {
-    id: string;
-    name: string;
-  };
-  isAnonymous?: boolean;
-}
+// interface Feedback {
+//   id: string;
+//   sender: {
+//     id: string;
+//     firstName: string;
+//     lastName: string;
+//     role: string;
+//   };
+//   year: string;
+//   quarter: string;
+//   status: string;
+//   createdAt: string;
+//   appreciation?: string;
+//   improvement?: string;
+//   wouldWorkAgain?: boolean;
+//   team?: {
+//     id: string;
+//     name: string;
+//   };
+//   isAnonymous?: boolean;
+// }
 
 const IndirectReports: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'list' | 'feedback' | 'attendance'>('list');
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<
+  const [_sortField] = useState<
     'name' | 'teams' | 'role' | 'manager' | 'lastLogin'
   >('name');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [_sortDirection] = useState<'asc' | 'desc'>('asc');
   const [expandedManagers, setExpandedManagers] = useState<Set<string>>(
     new Set()
   );

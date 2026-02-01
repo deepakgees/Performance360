@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { assessmentAPI, feedbackAPI } from '../services/api';
+import { feedbackAPI } from '../services/api';
 import ColleagueFeedbackPastTable from '../components/ColleagueFeedbackPastTable';
 import JiraStatisticsForUser from '../components/JiraStatisticsForUser';
 import ManagerFeedbackPastTable from '../components/ManagerFeedbackPastTable';

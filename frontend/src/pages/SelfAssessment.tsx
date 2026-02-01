@@ -80,9 +80,9 @@ const SelfAssessment: React.FC = () => {
   } | null>(null);
 
   const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-  const years = Array.from({ length: 5 }, (_, i) =>
-    (new Date().getFullYear() - 2 + i).toString()
-  );
+  // const years = Array.from({ length: 5 }, (_, i) =>
+  //   (new Date().getFullYear() - 2 + i).toString()
+  // );
   const satisfactionOptions = [
     'Very Satisfied',
     'Somewhat Satisfied',
@@ -664,7 +664,7 @@ const SelfAssessment: React.FC = () => {
                   <div className='grid grid-cols-2 gap-3'>
                     {quarters.map(quarter => {
                       const isPreviousQuarter = quarter === previousQuarter.quarter;
-                      const isSelected = assessmentData.quarter === quarter;
+                      // const isSelected = assessmentData.quarter === quarter;
                       return (
                         <button
                           key={quarter}

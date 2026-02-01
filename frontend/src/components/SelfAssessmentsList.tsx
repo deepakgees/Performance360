@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { assessmentAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
-interface Question {
-  id: string;
-  text: string;
-  category: string;
-  type: 'rating' | 'text' | 'satisfaction';
-}
+// interface Question {
+//   id: string;
+//   text: string;
+//   category: string;
+//   type: 'rating' | 'text' | 'satisfaction';
+// }
 
 interface Assessment {
   id: string;
@@ -518,7 +518,7 @@ const AssessmentEditModal: React.FC<AssessmentEditModalProps> = ({
 const SelfAssessmentsList: React.FC<SelfAssessmentsListProps> = ({
   userId,
   showDetailedView = false,
-  title = 'Self-Assessments',
+  title: _title = 'Self-Assessments',
 }) => {
   const { user } = useAuth();
   const [assessments, setAssessments] = useState<Assessment[]>([]);

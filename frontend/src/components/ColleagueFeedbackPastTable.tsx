@@ -44,7 +44,7 @@ interface ColleagueFeedbackPastTableProps {
 const ColleagueFeedbackPastTable: React.FC<ColleagueFeedbackPastTableProps> = ({
   feedbacks,
   loading,
-  title = 'Past Colleague Feedbacks',
+  title: _title = 'Past Colleague Feedbacks',
   showReceiver = false,
 }) => {
   const [sortConfig, setSortConfig] = useState<{
@@ -110,9 +110,9 @@ const ColleagueFeedbackPastTable: React.FC<ColleagueFeedbackPastTableProps> = ({
     });
   };
 
-  const getRatingStars = (rating: number) => {
-    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
-  };
+  // const getRatingStars = (rating: number) => {
+  //   return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  // };
 
   if (loading) {
     return (

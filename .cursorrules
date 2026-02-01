@@ -1,0 +1,118 @@
+# Cursor AI Code Generation Rules for Performance360
+
+## ESLint Compliance
+- **ALWAYS** follow ESLint rules defined in `frontend/.eslintrc.json`
+- **NEVER** generate code with unused variables - prefix with `_` if intentionally unused
+- **ALWAYS** include all dependencies in `useEffect` dependency arrays
+- **ALWAYS** use `useCallback` for functions used in `useEffect` dependencies
+- **ALWAYS** use `useMemo` for expensive computations used in dependencies
+
+## TypeScript Rules
+- **ALWAYS** use proper TypeScript types - no `any` unless absolutely necessary
+- **ALWAYS** define interfaces/types for props and state
+- **ALWAYS** use strict TypeScript mode (already configured)
+- **NEVER** use `@ts-ignore` or `@ts-expect-error` without explanation
+
+## React Best Practices
+- **ALWAYS** use functional components with hooks
+- **ALWAYS** use `useCallback` for event handlers passed as props
+- **ALWAYS** use `useMemo` for expensive calculations
+- **ALWAYS** include all dependencies in hooks (useEffect, useCallback, useMemo)
+- **NEVER** create functions inside render without `useCallback`
+- **NEVER** create objects/arrays in render without `useMemo` if used in dependencies
+
+## Code Quality
+- **ALWAYS** remove unused imports
+- **ALWAYS** remove unused variables (or prefix with `_`)
+- **ALWAYS** use meaningful variable names
+- **ALWAYS** add proper error handling
+- **ALWAYS** add proper TypeScript types
+
+## React Hooks Rules
+When generating React code:
+1. If a function is used in `useEffect` dependency array, wrap it in `useCallback`
+2. If a value is used in `useEffect` dependency array, ensure it's stable (use `useMemo` if needed)
+3. If creating a function that will be used as a dependency, always use `useCallback`
+4. Example pattern:
+```typescript
+const loadData = useCallback(async () => {
+  // ... implementation
+}, [dependency1, dependency2]);
+
+useEffect(() => {
+  loadData();
+}, [loadData]);
+```
+
+## Unused Variables
+- If a variable is intentionally unused, prefix it with `_` (e.g., `_unusedVar`)
+- Remove variables that are truly not needed
+- Example: `const _title = props.title;` if title is not used but might be needed later
+
+## Import Organization
+- Group imports: React first, then third-party, then local
+- Remove unused imports
+- Use absolute imports when configured
+
+## Error Handling
+- Always handle errors in async functions
+- Use try-catch for error handling
+- Provide meaningful error messages
+
+## Code Generation Checklist
+Before generating code, ensure:
+- [ ] No unused variables (or prefixed with `_`)
+- [ ] All `useEffect` dependencies included
+- [ ] Functions in dependencies wrapped in `useCallback`
+- [ ] Proper TypeScript types defined
+- [ ] No ESLint errors
+- [ ] Follows React best practices
+- [ ] Error handling included
+
+## Build Requirements
+- Code must pass `npm run build` (strict mode with CI=true)
+- All ESLint rules must be satisfied
+- All TypeScript errors must be resolved
+- No warnings allowed in production builds
+
+## Examples
+
+### ✅ CORRECT - useEffect with useCallback
+```typescript
+const loadUsers = useCallback(async () => {
+  const response = await api.getUsers();
+  setUsers(response.data);
+}, [api]);
+
+useEffect(() => {
+  loadUsers();
+}, [loadUsers]);
+```
+
+### ❌ WRONG - Missing dependency
+```typescript
+const loadUsers = async () => {
+  const response = await api.getUsers();
+  setUsers(response.data);
+};
+
+useEffect(() => {
+  loadUsers();
+}, []); // Missing loadUsers dependency
+```
+
+### ✅ CORRECT - Unused variable prefixed
+```typescript
+const _title = props.title; // Intentionally unused but kept for future use
+```
+
+### ❌ WRONG - Unused variable
+```typescript
+const title = props.title; // Error: unused variable
+```
+
+## Project Structure
+- Frontend: `frontend/src/`
+- Backend: `backend/src/`
+- Use TypeScript for all new code
+- Follow existing code patterns and conventions

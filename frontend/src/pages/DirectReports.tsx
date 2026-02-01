@@ -28,36 +28,36 @@ interface DirectReport {
   }>;
 }
 
-interface Feedback {
-  id: string;
-  sender: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-  };
-  year: string;
-  quarter: string;
-  status: string;
-  createdAt: string;
-  appreciation?: string;
-  improvement?: string;
-  wouldWorkAgain?: boolean;
-  team?: {
-    id: string;
-    name: string;
-  };
-  isAnonymous?: boolean;
-}
+// interface Feedback {
+//   id: string;
+//   sender: {
+//     id: string;
+//     firstName: string;
+//     lastName: string;
+//     role: string;
+//   };
+//   year: string;
+//   quarter: string;
+//   status: string;
+//   createdAt: string;
+//   appreciation?: string;
+//   improvement?: string;
+//   wouldWorkAgain?: boolean;
+//   team?: {
+//     id: string;
+//     name: string;
+//   };
+//   isAnonymous?: boolean;
+// }
 
 const DirectReports: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'list' | 'feedback' | 'attendance'>('list');
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<
+  const [sortField] = useState<
     'name' | 'teams' | 'role' | 'lastLogin'
   >('name');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedUser, setSelectedUser] = useState<DirectReport | null>(null);
 
   const {

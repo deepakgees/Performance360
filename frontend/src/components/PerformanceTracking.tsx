@@ -4,7 +4,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { quarterlyPerformanceAPI } from '../services/api';
 
@@ -47,7 +47,7 @@ interface PerformanceFormData {
 
 const PerformanceTracking: React.FC<PerformanceTrackingProps> = ({
   userId,
-  title = 'Performance Tracking',
+  title: _title = 'Performance Tracking',
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPerformance, setEditingPerformance] =
@@ -132,7 +132,7 @@ const PerformanceTracking: React.FC<PerformanceTrackingProps> = ({
     },
   });
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setFormData({
       quarter: 'Q1',
       year: new Date().getFullYear(),
@@ -144,13 +144,13 @@ const PerformanceTracking: React.FC<PerformanceTrackingProps> = ({
       nextActionPlanHrbp: '',
     });
     setEditingPerformance(null);
-  };
+  }, []);
 
-  const handleOpenModal = () => {
+  const handleOpenModal = useCallback(() => {
     setEditingPerformance(null);
     resetForm();
     setIsModalOpen(true);
-  };
+  }, [resetForm]);
 
   // Expose modal opening function globally
   useEffect(() => {
@@ -158,13 +158,7 @@ const PerformanceTracking: React.FC<PerformanceTrackingProps> = ({
     return () => {
       delete (window as any).openPerformanceModal;
     };
-  }, []);
-
-  const handleAddNew = () => {
-    setEditingPerformance(null);
-    resetForm();
-    setIsModalOpen(true);
-  };
+  }, [handleOpenModal]);
 
   const handleEdit = (performance: QuarterlyPerformance) => {
     setEditingPerformance(performance);
@@ -207,13 +201,13 @@ const PerformanceTracking: React.FC<PerformanceTrackingProps> = ({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString('en-US', {
+  //     year: 'numeric',
+  //     month: 'short',
+  //     day: 'numeric',
+  //   });
+  // };
 
   if (isLoading) {
     return (

@@ -104,7 +104,7 @@ const UserDetailsPage: React.FC<UserDetailsPageProps> = ({
   const {
     data: userAssessments,
     isLoading: assessmentsLoading,
-    error: assessmentsError,
+    // error: assessmentsError,
   } = useQuery({
     queryKey: ['user-assessments', user?.id],
     queryFn: () => assessmentAPI.getByUserId(user!.id),
@@ -114,7 +114,7 @@ const UserDetailsPage: React.FC<UserDetailsPageProps> = ({
   const {
     data: quarterlyPerformance,
     isLoading: quarterlyPerformanceLoading,
-    error: quarterlyPerformanceError,
+    // error: quarterlyPerformanceError,
   } = useQuery({
     queryKey: ['user-quarterly-performance', user?.id],
     queryFn: () => quarterlyPerformanceAPI.getByUserId(user!.id),
@@ -134,34 +134,34 @@ const UserDetailsPage: React.FC<UserDetailsPageProps> = ({
     }
   };
 
-  const getTabTitle = (tab: string) => {
-    switch (tab) {
-      case 'achievements-observations':
-        return 'Achievements & Observations';
-      case 'performance-tracking':
-        return 'Quarterly Assessment';
-      case 'assessments':
-        return 'Self-assessment';
-      case 'jira-statistics':
-        return 'Jira Statistics';
-      case 'colleague-feedback':
-        return 'Feedbacks Received as Colleague';
-      case 'manager-feedback':
-        return 'Feedbacks Received as Manager';
-      case 'colleague-provided':
-        return 'Feedbacks Provided to Colleagues';
-      default:
-        return '';
-    }
-  };
+  // const getTabTitle = (tab: string) => {
+  //   switch (tab) {
+  //     case 'achievements-observations':
+  //       return 'Achievements & Observations';
+  //     case 'performance-tracking':
+  //       return 'Quarterly Assessment';
+  //     case 'assessments':
+  //       return 'Self-assessment';
+  //     case 'jira-statistics':
+  //       return 'Jira Statistics';
+  //     case 'colleague-feedback':
+  //       return 'Feedbacks Received as Colleague';
+  //     case 'manager-feedback':
+  //       return 'Feedbacks Received as Manager';
+  //     case 'colleague-provided':
+  //       return 'Feedbacks Provided to Colleagues';
+  //     default:
+  //       return '';
+  //   }
+  // };
 
   // Process data for charts
   const processChartData = () => {
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth(); // 0-11
-    const currentQuarter = Math.floor(currentMonth / 3); // 0-3
+    // const currentYear = currentDate.getFullYear();
+    const _currentMonth = currentDate.getMonth(); // 0-11
+    // const currentQuarter = Math.floor(currentMonth / 3); // 0-3
 
     const last5Quarters: string[] = [];
 

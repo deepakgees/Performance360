@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ToastNotification from '../components/Notification';
 import { useAuth } from '../contexts/AuthContext';
@@ -352,7 +352,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
 
 const Users: React.FC = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]); // Store all users for filtering
   const [loading, setLoading] = useState(false);
@@ -382,7 +382,7 @@ const Users: React.FC = () => {
     type: 'success' | 'error' | 'warning';
   } | null>(null);
 
-  const applyFilters = (userList: User[]) => {
+  const applyFilters = useCallback((userList: User[]) => {
     let filtered = [...userList];
 
     // Filter by business unit
@@ -414,22 +414,10 @@ const Users: React.FC = () => {
     }
 
     setUsers(filtered);
-  };
+  }, [filters]);
 
   // Load data on component mount
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  // Apply filters whenever filters change
-  useEffect(() => {
-    if (allUsers.length > 0) {
-      applyFilters(allUsers);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, allUsers]);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await usersAPI.getAll();
@@ -440,7 +428,7 @@ const Users: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [applyFilters]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {

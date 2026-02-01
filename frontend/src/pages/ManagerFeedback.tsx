@@ -116,7 +116,7 @@ interface NewManagerFeedback {
 const ManagerFeedback: React.FC = () => {
   const { user } = useAuth();
   const [sentFeedbacks, setSentFeedbacks] = useState<ManagerFeedbackItem[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<'view' | 'create'>('view');
@@ -374,65 +374,65 @@ const ManagerFeedback: React.FC = () => {
 
   const filteredFeedbacks = sentFeedbacks;
 
-  const renderFeedbackCard = (feedback: ManagerFeedbackItem) => (
-    <div
-      key={feedback.id}
-      className='bg-white rounded-lg shadow-md p-6 border border-gray-200'
-    >
-      <div className='flex justify-between items-start mb-4'>
-        <div>
-          <h3 className='text-lg font-semibold text-gray-900'>
-            To: {feedback.receiver.firstName} {feedback.receiver.lastName}
-          </h3>
-          <p className='text-sm text-gray-600'>
-            {feedback.receiver.userTeams
-              ?.filter(ut => ut.isActive)
-              .map(ut => ut.team.name)
-              .join(', ')}
-            {feedback.receiver.position && ` • ${feedback.receiver.position}`}
-          </p>
-        </div>
-        <div className='text-right'>
-          {feedback.managerOverallRating && (
-            <div className='text-yellow-500 text-lg'>
-              {'★'.repeat(feedback.managerOverallRating) +
-                '☆'.repeat(5 - feedback.managerOverallRating)}
-            </div>
-          )}
-          <p className='text-sm text-gray-500'>
-            {new Date(feedback.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-      </div>
-      <div className='mb-4'>
-        <div className='flex justify-between items-center mb-2'>
-          <span className='inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full'>
-            {feedback.year} - {feedback.quarter}
-          </span>
-        </div>
-      </div>
-      {feedback.appreciation && (
-        <div className='mt-4 p-3 bg-gray-50 rounded-md'>
-          <h4 className='text-sm font-medium text-gray-700 mb-2'>
-            Appreciation:
-          </h4>
-          <p className='text-sm text-gray-600 whitespace-pre-wrap'>
-            {feedback.appreciation}
-          </p>
-        </div>
-      )}
-      {feedback.improvementAreas && (
-        <div className='mt-4 p-3 bg-gray-50 rounded-md'>
-          <h4 className='text-sm font-medium text-gray-700 mb-2'>
-            Improvement Areas:
-          </h4>
-          <p className='text-sm text-gray-600 whitespace-pre-wrap'>
-            {feedback.improvementAreas}
-          </p>
-        </div>
-      )}
-    </div>
-  );
+  // const renderFeedbackCard = (feedback: ManagerFeedbackItem) => (
+  //   <div
+  //     key={feedback.id}
+  //     className='bg-white rounded-lg shadow-md p-6 border border-gray-200'
+  //   >
+  //     <div className='flex justify-between items-start mb-4'>
+  //       <div>
+  //         <h3 className='text-lg font-semibold text-gray-900'>
+  //           To: {feedback.receiver.firstName} {feedback.receiver.lastName}
+  //         </h3>
+  //         <p className='text-sm text-gray-600'>
+  //           {feedback.receiver.userTeams
+  //             ?.filter(ut => ut.isActive)
+  //             .map(ut => ut.team.name)
+  //             .join(', ')}
+  //           {feedback.receiver.position && ` • ${feedback.receiver.position}`}
+  //         </p>
+  //       </div>
+  //       <div className='text-right'>
+  //         {feedback.managerOverallRating && (
+  //           <div className='text-yellow-500 text-lg'>
+  //             {'★'.repeat(feedback.managerOverallRating) +
+  //               '☆'.repeat(5 - feedback.managerOverallRating)}
+  //           </div>
+  //         )}
+  //         <p className='text-sm text-gray-500'>
+  //           {new Date(feedback.createdAt).toLocaleDateString()}
+  //         </p>
+  //       </div>
+  //     </div>
+  //     <div className='mb-4'>
+  //       <div className='flex justify-between items-center mb-2'>
+  //         <span className='inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full'>
+  //           {feedback.year} - {feedback.quarter}
+  //         </span>
+  //       </div>
+  //     </div>
+  //     {feedback.appreciation && (
+  //       <div className='mt-4 p-3 bg-gray-50 rounded-md'>
+  //         <h4 className='text-sm font-medium text-gray-700 mb-2'>
+  //           Appreciation:
+  //         </h4>
+  //         <p className='text-sm text-gray-600 whitespace-pre-wrap'>
+  //           {feedback.appreciation}
+  //         </p>
+  //       </div>
+  //     )}
+  //     {feedback.improvementAreas && (
+  //       <div className='mt-4 p-3 bg-gray-50 rounded-md'>
+  //         <h4 className='text-sm font-medium text-gray-700 mb-2'>
+  //           Improvement Areas:
+  //         </h4>
+  //         <p className='text-sm text-gray-600 whitespace-pre-wrap'>
+  //           {feedback.improvementAreas}
+  //         </p>
+  //       </div>
+  //     )}
+  //   </div>
+  // );
 
   return (
     <div id='manager-feedback-page' className='p-6'>

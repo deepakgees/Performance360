@@ -20,7 +20,7 @@ const JiraUnmappedUsers: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Fetch unmapped users and system users
-  const { data, isLoading, error, refetch } = useQuery<UnmappedUsersData>({
+  const { data, isLoading, error } = useQuery<UnmappedUsersData>({
     queryKey: ['jira-unmapped-users'],
     queryFn: async () => {
       const response = await jiraUnmappedUsersAPI.getUnmappedUsers();

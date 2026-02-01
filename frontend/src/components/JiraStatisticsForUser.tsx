@@ -351,7 +351,7 @@ const JiraStatisticsForUser: React.FC<JiraStatisticsForUserProps> = ({
   };
 
   const handleLimitChange = (newLimit: number) => {
-    setPagination(prev => ({ page: 1, limit: newLimit }));
+    setPagination(_prev => ({ page: 1, limit: newLimit }));
   };
 
   const formatTime = (seconds: number) => {
@@ -371,9 +371,9 @@ const JiraStatisticsForUser: React.FC<JiraStatisticsForUserProps> = ({
     return result;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString();
+  // };
 
   if (!dateRange.startDate || !dateRange.endDate) {
     return (

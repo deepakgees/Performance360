@@ -7,7 +7,7 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { api } from '../services/api';
 
 interface Achievement {
@@ -73,8 +73,8 @@ interface AchievementsObservationsProps {
 
 const AchievementsObservations: React.FC<AchievementsObservationsProps> = ({
   userId,
-  title = 'Achievements & Observations',
-  onAddButtonClick,
+  title: _title = 'Achievements & Observations',
+  onAddButtonClick: _onAddButtonClick,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAchievement, setEditingAchievement] =
@@ -88,6 +88,26 @@ const AchievementsObservations: React.FC<AchievementsObservationsProps> = ({
 
   const queryClient = useQueryClient();
 
+  const handleOpenModal = useCallback((achievement?: Achievement) => {
+    setEditingAchievement(achievement || null);
+    if (achievement) {
+      setFormData({
+        userId: achievement.userId,
+        date: achievement.date.split('T')[0],
+        achievement: achievement.achievement,
+        observation: achievement.observation,
+      });
+    } else {
+      setFormData({
+        userId: userId || '',
+        date: new Date().toISOString().split('T')[0],
+        achievement: '',
+        observation: '',
+      });
+    }
+    setIsModalOpen(true);
+  }, [userId]);
+
   // Listen for add button click from parent
   useEffect(() => {
     const handleAddClick = () => {
@@ -100,7 +120,7 @@ const AchievementsObservations: React.FC<AchievementsObservationsProps> = ({
     return () => {
       delete (window as any).openAchievementsModal;
     };
-  }, []);
+  }, [handleOpenModal]);
 
   // Fetch achievements and observations
   const {
@@ -157,26 +177,6 @@ const AchievementsObservations: React.FC<AchievementsObservationsProps> = ({
     },
   });
 
-  const handleOpenModal = (achievement?: Achievement) => {
-    if (achievement) {
-      setEditingAchievement(achievement);
-      setFormData({
-        userId: userId || '',
-        date: new Date(achievement.date).toISOString().split('T')[0],
-        achievement: achievement.achievement,
-        observation: achievement.observation,
-      });
-    } else {
-      setEditingAchievement(null);
-      setFormData({
-        userId: userId || '',
-        date: new Date().toISOString().split('T')[0],
-        achievement: '',
-        observation: '',
-      });
-    }
-    setIsModalOpen(true);
-  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);

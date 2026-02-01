@@ -195,12 +195,12 @@ const AttendanceCompliance: React.FC<AttendanceComplianceProps> = ({ userId }) =
     return '#9ca3af'; // Grey
   };
 
-  // Calculate summary statistics
-  const totalMonths = attendanceData.length;
-  const monthlyCompliantCount = attendanceData.filter(d => d.monthlyCompliant).length;
-  const weeklyCompliantCount = attendanceData.filter(d => d.weeklyCompliant === true).length;
-  const weeklyNonCompliantCount = attendanceData.filter(d => d.weeklyCompliant === false).length;
-  const weeklyNotSetCount = attendanceData.filter(d => d.weeklyCompliant === null).length;
+  // Calculate summary statistics (commented out for future use)
+  // const totalMonths = attendanceData.length;
+  // const monthlyCompliantCount = attendanceData.filter(d => d.monthlyCompliant).length;
+  // const weeklyCompliantCount = attendanceData.filter(d => d.weeklyCompliant === true).length;
+  // const weeklyNonCompliantCount = attendanceData.filter(d => d.weeklyCompliant === false).length;
+  // const weeklyNotSetCount = attendanceData.filter(d => d.weeklyCompliant === null).length;
 
   const handleEditComment = (recordId: string, monthLabel: string, currentReason: string | null) => {
     setEditingComment({ recordId, monthLabel });
@@ -420,7 +420,7 @@ const AttendanceCompliance: React.FC<AttendanceComplianceProps> = ({ userId }) =
                   </td>
                 </tr>
               ) : (
-                attendanceData.map((data, index) => {
+                attendanceData.map((data, _index) => {
                   // Determine if row should be highlighted (when BCS and Teams leaves don't match)
                   const shouldHighlight = data.leavesAvailed !== data.leaveNotificationsInTeamsChannel;
                   

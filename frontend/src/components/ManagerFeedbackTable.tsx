@@ -37,7 +37,7 @@ type SortDirection = 'asc' | 'desc';
 const ManagerFeedbackTable: React.FC<ManagerFeedbackTableProps> = ({
   feedbacks,
   loading,
-  title = 'Feedbacks Received as Manager',
+  title: _title = 'Feedbacks Received as Manager',
 }) => {
   const [sortConfig, setSortConfig] = useState<{
     field: SortField;
@@ -115,33 +115,33 @@ const ManagerFeedbackTable: React.FC<ManagerFeedbackTableProps> = ({
     });
   }, [feedbacks, sortConfig]);
 
-  // Helper function to get summary text for complex data
-  const getLeadershipSummary = (feedback: ManagerFeedback) => {
-    if (!feedback.leadershipStyle) return 'N/A';
-    const styles = [];
-    if (
-      feedback.leadershipStyle &&
-      Object.keys(feedback.leadershipStyle).length > 0
-    ) {
-      styles.push('Style 1');
-    }
-    return styles.length > 0 ? `${styles.length} style(s)` : 'N/A';
-  };
+  // Helper function to get summary text for complex data (commented out for future use)
+  // const getLeadershipSummary = (feedback: ManagerFeedback) => {
+  //   if (!feedback.leadershipStyle) return 'N/A';
+  //   const styles = [];
+  //   if (
+  //     feedback.leadershipStyle &&
+  //     Object.keys(feedback.leadershipStyle).length > 0
+  //   ) {
+  //     styles.push('Style 1');
+  //   }
+  //   return styles.length > 0 ? `${styles.length} style(s)` : 'N/A';
+  // };
 
-  const getCareerGrowthSummary = (feedback: ManagerFeedback) => {
-    if (!feedback.careerGrowth) return 'N/A';
-    const keys = Object.keys(feedback.careerGrowth);
-    if (keys.length > 0) {
-      return `${keys.length} item(s)`;
-    }
-    return 'N/A';
-  };
+  // const getCareerGrowthSummary = (feedback: ManagerFeedback) => {
+  //   if (!feedback.careerGrowth) return 'N/A';
+  //   const keys = Object.keys(feedback.careerGrowth);
+  //   if (keys.length > 0) {
+  //     return `${keys.length} item(s)`;
+  //   }
+  //   return 'N/A';
+  // };
 
-  const getCoachingCaringSummary = (feedback: ManagerFeedback) => {
-    if (!feedback.coachingCaring) return 'N/A';
-    const keys = Object.keys(feedback.coachingCaring);
-    return keys.length > 0 ? `${keys.length} item(s)` : 'N/A';
-  };
+  // const getCoachingCaringSummary = (feedback: ManagerFeedback) => {
+  //   if (!feedback.coachingCaring) return 'N/A';
+  //   const keys = Object.keys(feedback.coachingCaring);
+  //   return keys.length > 0 ? `${keys.length} item(s)` : 'N/A';
+  // };
 
   if (loading) {
     return (

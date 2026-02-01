@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ToastNotification from '../components/Notification';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,7 +11,7 @@ interface User {
   email: string;
 }
 
-interface MonthlyAttendance {
+interface MonthlyAttendanceData {
   id: string;
   userId: string;
   month: number;
@@ -48,7 +48,7 @@ interface AttendanceFormProps {
   onClose: () => void;
   onSuccess: () => void;
   onError: (error: string) => void;
-  editingRecord?: MonthlyAttendance | null;
+  editingRecord?: MonthlyAttendanceData | null;
 }
 
 const AttendanceForm: React.FC<AttendanceFormProps> = ({
@@ -458,11 +458,11 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({
 
 const MonthlyAttendance: React.FC = () => {
   const { user } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [attendances, setAttendances] = useState<MonthlyAttendance[]>([]);
+  const [searchParams] = useSearchParams();
+  const [attendances, setAttendances] = useState<MonthlyAttendanceData[]>([]);
   const [loading, setLoading] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<MonthlyAttendance | null>(
+  const [editingRecord, setEditingRecord] = useState<MonthlyAttendanceData | null>(
     null
   );
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
@@ -476,7 +476,7 @@ const MonthlyAttendance: React.FC = () => {
     year: searchParams.get('year') || '',
     month: searchParams.get('month') || '',
   });
-  const [allAttendances, setAllAttendances] = useState<MonthlyAttendance[]>([]);
+  const [allAttendances, setAllAttendances] = useState<MonthlyAttendanceData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
 
@@ -497,12 +497,6 @@ const MonthlyAttendance: React.FC = () => {
     loadAttendances();
   }, []);
 
-  // Filter attendances when filters change
-  useEffect(() => {
-    filterAttendances();
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [allAttendances, filters.employeeName, filters.year, filters.month]);
-
   const loadAttendances = async () => {
     try {
       setLoading(true);
@@ -520,7 +514,7 @@ const MonthlyAttendance: React.FC = () => {
     }
   };
 
-  const filterAttendances = () => {
+  const filterAttendances = useCallback(() => {
     let filtered = [...allAttendances];
 
     // Filter by year (if selected)
@@ -546,7 +540,13 @@ const MonthlyAttendance: React.FC = () => {
     }
 
     setAttendances(filtered);
-  };
+  }, [allAttendances, filters.employeeName, filters.year, filters.month]);
+
+  // Filter attendances when filters change
+  useEffect(() => {
+    filterAttendances();
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [filterAttendances]);
 
   // Calculate pagination
   const totalPages = Math.ceil(attendances.length / itemsPerPage);
@@ -559,7 +559,7 @@ const MonthlyAttendance: React.FC = () => {
     setShowFormModal(true);
   };
 
-  const handleEdit = (record: MonthlyAttendance) => {
+  const handleEdit = (record: MonthlyAttendanceData) => {
     setEditingRecord(record);
     setShowFormModal(true);
   };
@@ -680,7 +680,7 @@ const MonthlyAttendance: React.FC = () => {
           for (const user of buUsers) {
             try {
               const attResponse = await monthlyAttendanceAPI.getByUserId(user.id);
-              const filtered = attResponse.data.filter((att: MonthlyAttendance) => 
+              const filtered = attResponse.data.filter((att: MonthlyAttendanceData) => 
                 att.year === selectedYear && att.month === selectedMonth
               );
               if (filtered && filtered.length > 0) {
@@ -992,7 +992,7 @@ const MonthlyAttendance: React.FC = () => {
             for (const user of users) {
               try {
                 const attResponse = await monthlyAttendanceAPI.getByUserId(user.id);
-                const filtered = attResponse.data.filter((att: MonthlyAttendance) => 
+                const filtered = attResponse.data.filter((att: MonthlyAttendanceData) => 
                   att.year === selectedYear && att.month === selectedMonth
                 );
                 if (filtered && filtered.length > 0) {
@@ -1094,7 +1094,7 @@ const MonthlyAttendance: React.FC = () => {
           for (const user of users) {
             try {
               const attResponse = await monthlyAttendanceAPI.getByUserId(user.id);
-              const filtered = attResponse.data.filter((att: MonthlyAttendance) => 
+              const filtered = attResponse.data.filter((att: MonthlyAttendanceData) => 
                 att.year === selectedYear && att.month === selectedMonth
               );
               if (filtered && filtered.length > 0) {

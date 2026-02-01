@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { sessionsAPI } from '../services/api';
 import ToastNotification from '../components/Notification';
 
@@ -43,12 +43,7 @@ const Sessions: React.FC = () => {
     type: 'success' | 'error';
   } | null>(null);
 
-  useEffect(() => {
-    loadSessions();
-    loadStats();
-  }, [page, filterActive]);
-
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     try {
       setLoading(true);
       const response = await sessionsAPI.getAll({
@@ -66,7 +61,12 @@ const Sessions: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, filterActive]);
+
+  useEffect(() => {
+    loadSessions();
+    loadStats();
+  }, [loadSessions]);
 
   const loadStats = async () => {
     try {
