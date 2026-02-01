@@ -147,24 +147,98 @@
 
 ### Part 6: Run Database Migrations
 
-1. **Open Backend Service Terminal**
-   - Click on your backend service
-   - Go to **"Deployments"** tab
-   - Click on the latest deployment
-   - Click **"View Logs"** or find **"Terminal"** option
+**Method 1: Using Railway CLI (RECOMMENDED - Easiest)**
 
-2. **Run Prisma Commands**
-   - In the terminal, run:
+1. **Install Railway CLI** (if not already installed)
+   ```bash
+   npm install -g @railway/cli
+   ```
+
+2. **Login to Railway**
+   ```bash
+   railway login
+   ```
+   - This will open a browser for authentication
+   - Authorize Railway CLI
+
+3. **Link to Your Project**
+   ```bash
+   railway link
+   ```
+   - Select your project from the list
+   - Select your backend service
+
+4. **Run Prisma Commands**
+   ```bash
+   # Generate Prisma client
+   railway run npx prisma generate
+   
+   # Deploy migrations
+   railway run npx prisma migrate deploy
+   ```
+
+5. **Verify Migration**
+   ```bash
+   railway run npx prisma migrate status
+   ```
+   - Should show: "Database schema is up to date!"
+
+---
+
+**Method 2: Using Railway Web Terminal**
+
+1. **Access Terminal in Railway Dashboard**
+   - Go to your Railway project dashboard
+   - Click on your **backend service** (not the deployment)
+   - Look for one of these options:
+     - **"Terminal"** tab (at the top)
+     - **"Connect"** button (top right)
+     - **"Shell"** option in the service menu
+     - **"Open Terminal"** button
+
+2. **If Terminal Tab is Not Visible:**
+   - Railway's UI may vary
+   - Try clicking on the service name itself
+   - Look for a terminal icon or ">" symbol
+   - Check the right sidebar for terminal options
+
+3. **Run Prisma Commands**
+   - Once terminal opens, run:
    ```bash
    npx prisma generate
    npx prisma migrate deploy
    ```
 
-   **Alternative**: Use Railway CLI (see Part 9)
-
-3. **Verify Migration**
-   - Check logs for success messages
+4. **Verify Migration**
+   - Check for success messages
    - Database tables should now be created
+
+---
+
+**Method 3: Add to Build Script (Automatic)**
+
+You can also add Prisma commands to your build process so they run automatically:
+
+1. **Update `backend/package.json`**:
+   ```json
+   {
+     "scripts": {
+       "build": "npm run db:generate && tsc",
+       "postbuild": "npx prisma migrate deploy",
+       "db:generate": "prisma generate"
+     }
+   }
+   ```
+
+2. **This will run automatically on each deployment**
+
+---
+
+**Which Method to Use?**
+
+- **Method 1 (CLI)**: Best for one-time setup and manual migrations
+- **Method 2 (Web Terminal)**: Good if you prefer web interface
+- **Method 3 (Build Script)**: Best for automatic migrations on every deploy
 
 ---
 
