@@ -5,105 +5,105 @@
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.868Z"
+      "timestamp": "2026-02-01T14:08:51.972Z"
     },
     {
       "testName": "GET /api/users/me without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.872Z"
+      "timestamp": "2026-02-01T14:08:51.976Z"
     },
     {
       "testName": "GET /api/assessments without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.875Z"
+      "timestamp": "2026-02-01T14:08:51.979Z"
     },
     {
       "testName": "GET /api/colleague-feedback/received without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.878Z"
+      "timestamp": "2026-02-01T14:08:51.981Z"
     },
     {
       "testName": "GET /api/manager-feedback/received without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.880Z"
+      "timestamp": "2026-02-01T14:08:51.984Z"
     },
     {
       "testName": "GET /api/quarterly-performance/someUserId without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.884Z"
+      "timestamp": "2026-02-01T14:08:51.986Z"
     },
     {
       "testName": "GET /api/achievements-observations/someUserId without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.887Z"
+      "timestamp": "2026-02-01T14:08:51.989Z"
     },
     {
       "testName": "GET /api/monthly-attendance/someUserId without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.890Z"
+      "timestamp": "2026-02-01T14:08:51.991Z"
     },
     {
       "testName": "POST /api/assessments without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.894Z"
+      "timestamp": "2026-02-01T14:08:51.993Z"
     },
     {
       "testName": "POST /api/colleague-feedback without authentication",
       "passed": true,
       "severity": "critical",
       "details": "Expected 401/403, got 401",
-      "timestamp": "2026-01-20T13:08:33.897Z"
+      "timestamp": "2026-02-01T14:08:51.996Z"
     },
     {
       "testName": "Access with invalid token: invalid.token.here...",
       "passed": true,
       "severity": "high",
       "details": "Invalid tokens should be rejected. Status: 403",
-      "timestamp": "2026-01-20T13:08:33.903Z"
+      "timestamp": "2026-02-01T14:08:52.003Z"
     },
     {
       "testName": "Access with invalid token: Bearer invalid...",
       "passed": true,
       "severity": "high",
       "details": "Invalid tokens should be rejected. Status: 403",
-      "timestamp": "2026-01-20T13:08:33.906Z"
+      "timestamp": "2026-02-01T14:08:52.006Z"
     },
     {
       "testName": "Access with invalid token: eyJhbGciOiJIUzI1NiIs...",
       "passed": true,
       "severity": "high",
       "details": "Invalid tokens should be rejected. Status: 403",
-      "timestamp": "2026-01-20T13:08:33.910Z"
+      "timestamp": "2026-02-01T14:08:52.009Z"
     },
     {
       "testName": "Access with invalid token: null",
       "passed": true,
       "severity": "high",
       "details": "Invalid tokens should be rejected. Status: 401",
-      "timestamp": "2026-01-20T13:08:33.912Z"
+      "timestamp": "2026-02-01T14:08:52.011Z"
     },
     {
       "testName": "Access with invalid token: null",
       "passed": true,
       "severity": "high",
       "details": "Invalid tokens should be rejected. Status: 401",
-      "timestamp": "2026-01-20T13:08:33.914Z"
+      "timestamp": "2026-02-01T14:08:52.013Z"
     }
   ],
   "failed": [],
@@ -113,7 +113,7 @@
       "passed": false,
       "severity": "medium",
       "details": "Rate limiting may not be implemented",
-      "timestamp": "2026-01-20T13:08:33.977Z"
+      "timestamp": "2026-02-01T14:08:52.066Z"
     }
   ],
   "critical": []

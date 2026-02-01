@@ -12,10 +12,10 @@ set CUR_SS=%time:~6,2%
 set BACKUP_FILE=%CUR_YYYY%-%CUR_MM%-%CUR_DD%_%CUR_HH%-%CUR_NN%-%CUR_SS%.custom.backup
 
 REM Set PostgreSQL password (avoid spaces after =)
-set PGPASSWORD=goenkd
+set PGPASSWORD=<specify password here>
 
 REM Run pg_dump (update the path if needed)
-"C:\Program Files\PostgreSQL\17\bin\pg_dump.exe" --username="postgres" -d feedback_app --format=custom -f "C:\Users\goenkd\OneDrive - msg systems ag\MSG\FeedbackAppBackups\%BACKUP_FILE%"
+"C:\Program Files\PostgreSQL\17\bin\pg_dump.exe" -h ballast.proxy.rlwy.net -p 27686 --username="postgres" -d performance360 --format=custom -f "C:\Users\goenkd\OneDrive - msg systems ag\MSG\Performance360Backups\%BACKUP_FILE%"
 
 
 echo Backup successfully created: %BACKUP_FILE%

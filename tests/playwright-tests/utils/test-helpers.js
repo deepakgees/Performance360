@@ -236,8 +236,24 @@ async function registerAndLoginUserViaUI(page, userData) {
   await page.fill('#register-email', userData.email);
   await page.fill('#register-password', userData.password);
 
-  // Submit the registration form and wait for navigation to login page
+  // Submit the registration form
   await page.click('#register-submit-button');
+  
+  // Wait a moment for the response
+  await page.waitForTimeout(1000);
+  
+  // Check if there's an error message (registration failed)
+  const errorMessage = page.locator('text=Unable to complete registration').or(page.locator('text=already exists')).or(page.locator('text=Registration failed'));
+  const hasError = await errorMessage.isVisible().catch(() => false);
+  
+  if (hasError) {
+    console.log(`[TEST-HELPER] Registration failed for ${userData.email}. Error may be visible on page.`);
+    // Try to get the error text
+    const errorText = await errorMessage.textContent().catch(() => 'Unknown error');
+    throw new Error(`Registration failed: ${errorText}`);
+  }
+  
+  // Wait for navigation to login page (successful registration)
   await page.waitForURL(/.*\/login/, { timeout: 15000 });
   
   // Wait for page to be fully loaded
