@@ -420,15 +420,42 @@ const Users: React.FC = () => {
   const loadUsers = useCallback(async () => {
     try {
       setLoading(true);
+      console.log('Loading users...');
       const response = await usersAPI.getAll();
-      setAllUsers(response.data);
-      applyFilters(response.data);
-    } catch (error) {
+      console.log('Users API response:', response);
+      console.log('Users data:', response.data);
+      
+      // Handle different response structures
+      const usersData = Array.isArray(response.data) 
+        ? response.data 
+        : response.data?.data || response.data?.users || [];
+      
+      console.log('Processed users data:', usersData);
+      setAllUsers(usersData);
+      // Apply filters will be called by the useEffect below
+    } catch (error: any) {
       console.error('Error loading users:', error);
+      console.error('Error details:', error.response?.data || error.message);
+      setNotification({
+        message: error.response?.data?.message || error.message || 'Failed to load users. Please try again.',
+        type: 'error',
+      });
     } finally {
       setLoading(false);
     }
-  }, [applyFilters]);
+  }, []);
+
+  // Load users on component mount
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
+  // Apply filters whenever filters or allUsers change
+  useEffect(() => {
+    if (allUsers.length > 0) {
+      applyFilters(allUsers);
+    }
+  }, [filters, allUsers, applyFilters]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
