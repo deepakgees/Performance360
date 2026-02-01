@@ -1,0 +1,9 @@
+# Railway configuration file
+# This file helps Railway understand your project structure
+
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
