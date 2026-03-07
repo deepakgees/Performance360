@@ -1,0 +1,33 @@
+---
+description: Backend Express, logging, Prisma, and middleware conventions
+globs: backend/**/*.ts
+alwaysApply: false
+---
+
+# Backend rules (Express + Prisma)
+
+## Logging
+
+- Use `logger` from `backend/src/utils/logger` for all logging. Do not use `console.log` in request-handling or production code paths.
+- Use `logger.logInfo`, `logger.logWarning`, `logger.logError` with appropriate context (e.g. method, URL).
+- When logging request bodies or user input, use `sanitizeForLogging` from `backend/src/utils/sanitizeLogs` to avoid logging secrets.
+
+## Database
+
+- Use **Prisma** for all database access. Instantiate `PrismaClient` where needed (e.g. per route file or shared instance).
+- Schema and migrations live in `backend/prisma/`. Run `npm run db:push` or migrations as appropriate.
+
+## Structure
+
+- **Routes**: Define in `backend/src/routes/` using `const router = Router();` and export the router. Mount routes in `backend/src/index.ts`.
+- **Middleware**: Put in `backend/src/middleware/` (e.g. auth, errorHandler, requestLogger, rateLimiter, sessionTracking).
+- **Utils**: Shared helpers in `backend/src/utils/` (logger, envValidation, validators, passwordPolicy, sanitizeLogs, accessControl, emailService).
+
+## Environment
+
+- Validate required env vars on startup using `utils/envValidation`. See `backend/env.example` for expected variables.
+
+## Code style
+
+- Use TypeScript with proper types. Add JSDoc `@fileoverview` for route and middleware modules where it helps.
+- Follow existing patterns in `backend/src/routes/auth.ts` and `backend/src/middleware/auth.ts` for structure and logging.

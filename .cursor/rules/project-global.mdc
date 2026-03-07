@@ -1,0 +1,13 @@
+---
+description: Project-wide coding standards and quality gates
+alwaysApply: true
+---
+
+# Project-wide rules
+
+- Use **TypeScript** for all new code; strict mode is enabled. No `any` unless necessary; no `@ts-ignore` or `@ts-expect-error` without a brief comment.
+- **Before committing**: run `npm run build` in both `frontend/` and `backend/`. Fix any errors or warnings.
+- Follow **existing patterns** in the codebase. When adding features, mirror structure and style of similar files.
+- **Frontend** specifics (ESLint, React hooks, components): see `.cursor/rules/` and `frontend/.eslintrc.json`.
+- **Backend** specifics (logging, Prisma, routes): see `.cursor/rules/` backend and API rules.
+- All code (including AI-generated) must be reviewed; the developer is responsible for accepted changes.

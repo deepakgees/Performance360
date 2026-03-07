@@ -2,59 +2,61 @@
 
 ## Overview
 
-This guide helps you configure Cursor IDE to generate code that follows ESLint rules and passes strict builds automatically.
+This guide helps you configure Cursor IDE to generate code that follows project conventions, ESLint rules, and passes strict builds. The project uses **AGENTS.md** and **`.cursor/rules/`** to give the AI consistent context.
 
 ## Configuration Files
 
-### 1. `.cursorrules` File (Created)
+### 1. AGENTS.md (project root)
 
-This file tells Cursor's AI how to generate code. It includes:
-- ESLint compliance rules
-- React best practices
-- TypeScript requirements
-- Hook dependency rules
+Single briefing file for AI agents: stack, project structure, commands (build/test), conventions, and references. Kept under ~150 lines. Cursor applies this when working in the repo.
 
-**Location**: `.cursorrules` (root directory)
+**Location**: `AGENTS.md` (root directory)
 
-### 2. ESLint Configuration
+### 2. Project rules (`.cursor/rules/`)
+
+Scoped rule files that tell Cursor how to generate and edit code:
+
+| Rule file | When it applies | Purpose |
+|-----------|------------------|---------|
+| `project-global.mdc` | Always | TypeScript strict, build-before-commit, follow existing patterns |
+| `frontend-react-ts.mdc` | Files under `frontend/**/*.ts`, `frontend/**/*.tsx` | ESLint, React hooks, useCallback/useMemo, types |
+| `backend-express.mdc` | Files under `backend/**/*.ts` | Logging, Prisma, middleware, utils |
+| `api-routes.mdc` | Files under `backend/src/routes/**/*.ts` | REST, validation, auth, error responses |
+
+**Location**: `.cursor/rules/` (root directory). Rule types: *Always Apply* (project-global) and *Apply to Specific Files* (others). For full agent context, ensure AGENTS.md and the relevant rule files are in place.
+
+### 3. ESLint configuration
 
 **Location**: `frontend/.eslintrc.json`
 
-Already configured with:
-- Strict unused variable checking
-- React hooks exhaustive deps enforcement
-- TypeScript-specific rules
+Already configured with strict unused variable checking, React hooks exhaustive deps, and TypeScript rules.
 
-### 3. TypeScript Configuration
+### 4. TypeScript configuration
 
 **Location**: `frontend/tsconfig.json`
 
-Already configured with:
-- Strict mode enabled
-- Type checking enabled
+Strict mode and type checking enabled.
 
 ## Cursor Settings
 
-### Enable ESLint Integration
+### Enable ESLint integration
 
 1. Open Cursor Settings (`Ctrl+,` or `Cmd+,`)
 2. Search for "ESLint"
 3. Enable:
-   - ✅ **ESLint: Enable**
-   - ✅ **ESLint: Validate**
-   - ✅ **Editor: Code Actions On Save** → Enable "source.fixAll.eslint"
+   - **ESLint: Enable**
+   - **ESLint: Validate**
+   - **Editor: Code Actions On Save** → "source.fixAll.eslint"
 
-### Enable TypeScript Checking
+### Enable TypeScript checking
 
 1. In Cursor Settings, search for "TypeScript"
-2. Enable:
-   - ✅ **TypeScript: Validate**
-   - ✅ **TypeScript: Check JS**
+2. Enable **TypeScript: Validate** and **TypeScript: Check JS**
 
-### Code Actions on Save
+### Code actions on save
 
-1. In Settings, search for "Code Actions On Save"
-2. Add to `settings.json`:
+In Settings, add to `settings.json`:
+
 ```json
 {
   "editor.codeActionsOnSave": {
@@ -66,65 +68,42 @@ Already configured with:
 
 ## Using Cursor AI
 
-### When Asking Cursor to Generate Code
+### When asking Cursor to generate code
 
-1. **Be Specific**: Mention ESLint compliance
-   - "Generate a React component that follows ESLint rules"
-   - "Create a function with proper TypeScript types and no ESLint errors"
+1. **Be specific**: Mention ESLint or project rules (e.g. "follow rules in `.cursor/rules/`" or "use useCallback for handlers").
+2. **Reference context**: Point to AGENTS.md or a rule (e.g. "follow frontend rules" when editing React/TS files).
+3. **Request validation**: Ask Cursor to ensure code passes ESLint and `npm run build`.
 
-2. **Reference Rules**: Point to `.cursorrules`
-   - "Follow the rules in `.cursorrules`"
-   - "Use useCallback for functions in useEffect dependencies"
+### Example prompts
 
-3. **Request Validation**: Ask Cursor to check
-   - "Make sure this code passes ESLint"
-   - "Ensure no unused variables"
+**Good:**
+- "Create a React component that follows the frontend rules in `.cursor/rules/` and uses useCallback for event handlers."
+- "Add an API route that validates input with express-validator and uses the auth middleware; follow patterns in `backend/src/routes/auth.ts`."
 
-### Example Prompts
-
-**Good Prompts:**
-```
-Create a React component that:
-- Uses useCallback for event handlers
-- Includes all useEffect dependencies
-- Has no unused variables
-- Follows ESLint rules in .cursorrules
-```
-
-```
-Generate a function that:
-- Uses proper TypeScript types
-- Handles errors properly
-- Passes ESLint validation
-- Follows the project's code style
-```
-
-**Bad Prompts:**
-```
-Create a component (might ignore ESLint rules)
-```
+**Less effective:**
+- "Create a component" (no reference to rules or conventions)
 
 ## Verification
 
-### After Code Generation
+### After code generation
 
-1. **Check ESLint**: Look for red underlines
-2. **Run Build**: `npm run build` in frontend
-3. **Fix Issues**: Ask Cursor to fix any errors
+1. Check ESLint in the editor (red underlines).
+2. Run `npm run build` in both `frontend/` and `backend/`.
+3. Ask Cursor to fix any reported errors.
 
-### Quick Check Commands
+### Quick check commands
 
 ```bash
-# Frontend - Check for ESLint errors
-cd frontend
-npm run build
+# Frontend
+cd frontend && npm run build
 
-# If build fails, fix errors and rebuild
+# Backend
+cd backend && npm run build
 ```
 
-## Cursor Settings File
+## Cursor / VS Code settings file
 
-Create or update `.vscode/settings.json` (Cursor uses VS Code settings):
+Create or update `.vscode/settings.json`:
 
 ```json
 {
@@ -151,60 +130,45 @@ Create or update `.vscode/settings.json` (Cursor uses VS Code settings):
 }
 ```
 
-## Tips for Better Code Generation
+## Tips for better code generation
 
-### 1. Context Matters
-- Open relevant files before asking Cursor to generate code
-- Cursor will see existing patterns and follow them
-
-### 2. Be Explicit
-- Mention specific rules: "use useCallback", "include dependencies"
-- Reference project conventions
-
-### 3. Iterate
-- Generate code
-- Check for errors
-- Ask Cursor to fix: "Fix the ESLint errors in this code"
-
-### 4. Use Examples
-- Show Cursor examples of correct code
-- Point to similar files in the project
+1. **Context**: Open relevant files before asking Cursor to generate code so it can follow existing patterns.
+2. **Explicit**: Mention "use useCallback", "include dependencies", or "follow backend rules".
+3. **Iterate**: Generate → run build → ask Cursor to fix errors.
+4. **Examples**: Point to similar files (e.g. `frontend/src/components/Layout.tsx`, `backend/src/routes/auth.ts`).
 
 ## Troubleshooting
 
-### Cursor Still Generates Code with Errors
+### Cursor doesn’t follow project rules
 
-1. **Check `.cursorrules`**: Make sure it's in the root directory
-2. **Restart Cursor**: Sometimes needed for rules to take effect
-3. **Be More Explicit**: Add "follow ESLint rules" to your prompt
-4. **Check Settings**: Ensure ESLint is enabled in Cursor
+1. **Check rules**: Ensure `AGENTS.md` is at repo root and `.cursor/rules/` contains the `.mdc` files.
+2. **Reload Cursor**: Reload the window so new or updated rules are picked up (e.g. Command Palette → "Developer: Reload Window").
+3. **Be explicit**: In chat, reference "AGENTS.md" or ".cursor/rules" or the specific rule (e.g. "follow frontend-react-ts rules").
 
-### ESLint Not Working
+### ESLint not working
 
-1. **Install ESLint Extension**: In Cursor, install ESLint extension
-2. **Check Node Modules**: Run `npm install` in frontend
-3. **Check ESLint Config**: Verify `frontend/.eslintrc.json` exists
+1. Install the ESLint extension in Cursor.
+2. Run `npm install` in `frontend/`.
+3. Verify `frontend/.eslintrc.json` exists.
 
-### TypeScript Errors
+### TypeScript errors
 
-1. **Check tsconfig.json**: Verify it's properly configured
-2. **Restart TypeScript Server**: `Ctrl+Shift+P` → "TypeScript: Restart TS Server"
-3. **Check Types**: Ensure all types are properly defined
+1. Check `frontend/tsconfig.json` and `backend` tsconfig if used.
+2. Restart TS server: `Ctrl+Shift+P` → "TypeScript: Restart TS Server".
 
-## Best Practices
+## Best practices
 
-1. **Always Review Generated Code**: Don't blindly accept AI-generated code
-2. **Run Build Before Committing**: `npm run build` catches issues
-3. **Fix Errors Immediately**: Don't let errors accumulate
-4. **Use Linter**: Let ESLint guide your code quality
-5. **Follow Patterns**: Match existing code style in the project
+1. **Review generated code**: Don’t accept AI-generated code without review; the developer is responsible for accepted changes.
+2. **Run build before committing**: Use `npm run build` in both frontend and backend.
+3. **Fix errors early**: Don’t let errors accumulate.
+4. **Use the linter**: Rely on ESLint and project rules for consistency.
+5. **Follow patterns**: Match existing code style and structure in the project.
 
 ## Summary
 
-- ✅ `.cursorrules` file created with project-specific rules
-- ✅ ESLint configuration already strict
-- ✅ TypeScript strict mode enabled
-- ✅ Build script uses CI mode (warnings as errors)
-- ✅ Cursor will now follow these rules when generating code
+- **AGENTS.md** at project root for stack, commands, and conventions.
+- **`.cursor/rules/`** with project-global, frontend, backend, and API rules (file-scoped where appropriate).
+- ESLint and TypeScript remain strict; build scripts use CI mode where applicable.
+- Cursor uses these rules and AGENTS.md when generating and editing code.
 
-**Remember**: Always run `npm run build` before committing to catch any issues!
+**Remember**: Run `npm run build` in both frontend and backend before committing.

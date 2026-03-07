@@ -1,0 +1,25 @@
+---
+description: API route style – REST, validation, auth, error responses
+globs: backend/src/routes/**/*.ts
+alwaysApply: false
+---
+
+# API route rules
+
+## Style
+
+- **RESTful** endpoints. Use Express `Router()`; apply middleware (rate limit, auth) per route or router as needed.
+- **Input validation**: Use `express-validator` (`body`, `query`, `param`, `validationResult`). Return `400` with `{ errors: errors.array() }` when validation fails.
+- **Auth**: For protected routes, use `authenticateToken` from `backend/src/middleware/auth`. Use `AuthRequest` for `req` when `req.user` is needed.
+- **Responses**: Use consistent status codes (200/201 for success, 400 for validation, 401/403 for auth, 404 for not found, 500 for server errors). Return JSON with clear shapes (e.g. `{ message }`, `{ errors }`, `{ user, token }`).
+
+## Patterns
+
+- Apply `authRateLimiter` (or other rate limiters) where defined for auth routes.
+- In handlers: `try/catch`, call `validationResult(req)` after validators, use `logger` and `sanitizeForLogging` for request/error logging.
+- Use Prisma for DB operations; handle errors and respond with appropriate status codes.
+
+## Reference
+
+- Canonical example: `backend/src/routes/auth.ts` (register/login flow, validation, logging, auth middleware, response shape).
+- Auth middleware and `AuthRequest`: `backend/src/middleware/auth.ts`.

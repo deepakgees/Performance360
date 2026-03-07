@@ -1,0 +1,64 @@
+---
+description: React, TypeScript, and ESLint conventions for frontend
+globs: frontend/**/*.ts,frontend/**/*.tsx
+alwaysApply: false
+---
+
+# Frontend rules (React + TypeScript)
+
+## ESLint and types
+
+- Follow ESLint rules in `frontend/.eslintrc.json`.
+- No unused variables; prefix with `_` if intentionally unused (e.g. `_title`).
+- Include all dependencies in `useEffect` (and other hook) dependency arrays.
+- Use `useCallback` for functions used in `useEffect` (or other hook) dependencies.
+- Use `useMemo` for expensive computations used in dependencies.
+- Use proper TypeScript types; define interfaces for props and state. No `any` unless necessary.
+- Do not use `@ts-ignore` or `@ts-expect-error` without a short explanation.
+
+## React
+
+- Use functional components and hooks only.
+- Use `useCallback` for event handlers passed as props.
+- Use `useMemo` for expensive calculations and for values used in dependency arrays.
+- Do not create functions in render without `useCallback` when they are used as dependencies.
+- Do not create objects/arrays in render without `useMemo` when used in dependencies.
+- Remove unused imports and variables (or prefix with `_`).
+- Add error handling in async code and meaningful error messages.
+
+## Pattern: useEffect + useCallback
+
+```typescript
+// ✅ CORRECT
+const loadUsers = useCallback(async () => {
+  const response = await api.getUsers();
+  setUsers(response.data);
+}, [api]);
+
+useEffect(() => {
+  loadUsers();
+}, [loadUsers]);
+```
+
+```typescript
+// ❌ WRONG – missing dependency
+const loadUsers = async () => { ... };
+useEffect(() => { loadUsers(); }, []); // Missing loadUsers
+```
+
+## Unused variables
+
+```typescript
+// ✅ CORRECT
+const _title = props.title; // Intentionally unused
+
+// ❌ WRONG
+const title = props.title; // ESLint: unused variable
+```
+
+## Imports and build
+
+- Group imports: React first, then third-party, then local. Remove unused imports.
+- Code must pass `npm run build` in `frontend/` (strict/CI; no warnings).
+
+Reference existing components for structure, e.g. `frontend/src/components/Layout.tsx` or similar.
