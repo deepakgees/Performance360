@@ -43,6 +43,7 @@ Briefing for AI coding agents. For full project overview see [README.md](README.
 - **Frontend**: Follow ESLint in `frontend/.eslintrc.json` and rules in `.cursor/rules/` (hooks, useCallback/useMemo, deps, functional components).
 - **Backend**: Use `logger` from `backend/src/utils/logger` (not `console.log` in request paths). Use Prisma for DB. Use express-validator where validation exists. Env validated via `utils/envValidation`; sanitize logs with `utils/sanitizeLogs` where relevant.
 - **Quality**: Run `npm run build` in both frontend and backend before committing. All code (including AI-generated) should be reviewed; the developer is responsible for accepted changes.
+- **Testing**: For every new change (feature, bugfix, or behavior change), add or update tests. Use your judgment: unit tests (e.g. component/API tests in `frontend/src/**/*.test.tsx` or `tests/backend-tests/`) for logic and components; E2E tests (`tests/playwright-tests/`) for user-facing flows and critical paths.
 
 ## Architecture (high level)
 

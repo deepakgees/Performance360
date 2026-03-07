@@ -112,7 +112,7 @@ const DirectReportsFeedbackTab: React.FC<DirectReportsFeedbackTabProps> = ({
           feedback.quarter === previousQuarter.quarter
       );
 
-      const allCompleted = hasSelfAssessment && hasColleagueFeedback && hasManagerFeedback;
+      const allCompleted = hasSelfAssessment;
 
       statuses.push({
         userId: report.id,
