@@ -43,17 +43,17 @@ const DirectReportsFeedbackTab: React.FC<DirectReportsFeedbackTabProps> = ({
       const results = await Promise.all(
         directReports.map(async (report) => {
           try {
-            const [assessments, colleagueFeedback, managerFeedback] = await Promise.all([
+            const [assessments, colleagueFeedback, managerFeedbackSent] = await Promise.all([
               assessmentAPI.getByUserId(report.id),
               feedbackAPI.getColleagueSentByUser(report.id),
-              feedbackAPI.getManagerReceivedByUser(report.id),
+              feedbackAPI.getManagerSentByUser(report.id),
             ]);
 
             return {
               userId: report.id,
               assessments: assessments.data || [],
               colleagueFeedback: colleagueFeedback.data || [],
-              managerFeedback: managerFeedback.data || [],
+              managerFeedbackSent: managerFeedbackSent.data || [],
             };
           } catch (error) {
             // Return empty data if any request fails
@@ -61,7 +61,7 @@ const DirectReportsFeedbackTab: React.FC<DirectReportsFeedbackTabProps> = ({
               userId: report.id,
               assessments: [],
               colleagueFeedback: [],
-              managerFeedback: [],
+              managerFeedbackSent: [],
             };
           }
         })
@@ -105,8 +105,8 @@ const DirectReportsFeedbackTab: React.FC<DirectReportsFeedbackTabProps> = ({
           feedback.quarter === previousQuarter.quarter
       );
 
-      // Check Manager Feedback received (at least one received in the quarter)
-      const hasManagerFeedback = data.managerFeedback.some(
+      // Check Manager Feedback provided/sent (at least one sent in the quarter)
+      const hasManagerFeedback = data.managerFeedbackSent.some(
         (feedback: any) =>
           feedback.year === previousQuarter.year &&
           feedback.quarter === previousQuarter.quarter
@@ -198,14 +198,12 @@ const DirectReportsFeedbackTab: React.FC<DirectReportsFeedbackTabProps> = ({
   // Calculate statistics
   const stats = useMemo(() => {
     const total = feedbackStatuses.length;
-    const completed = feedbackStatuses.filter(s => s.allCompleted).length;
     const selfAssessmentCount = feedbackStatuses.filter(s => s.selfAssessment).length;
     const colleagueFeedbackCount = feedbackStatuses.filter(s => s.colleagueFeedback).length;
     const managerFeedbackCount = feedbackStatuses.filter(s => s.managerFeedback).length;
 
     return {
       total,
-      completed,
       selfAssessmentCount,
       colleagueFeedbackCount,
       managerFeedbackCount,
@@ -247,12 +245,6 @@ const DirectReportsFeedbackTab: React.FC<DirectReportsFeedbackTabProps> = ({
           <div className='text-sm font-medium text-blue-800'>Total Reports</div>
           <div className='mt-1 text-2xl font-bold text-blue-900'>{stats.total}</div>
         </div>
-        <div className='bg-green-50 border border-green-200 rounded-lg p-4'>
-          <div className='text-sm font-medium text-green-800'>All Completed</div>
-          <div className='mt-1 text-2xl font-bold text-green-900'>
-            {stats.completed} ({stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%)
-          </div>
-        </div>
         <div className='bg-purple-50 border border-purple-200 rounded-lg p-4'>
           <div className='text-sm font-medium text-purple-800'>Self Assessments</div>
           <div className='mt-1 text-2xl font-bold text-purple-900'>
@@ -260,9 +252,15 @@ const DirectReportsFeedbackTab: React.FC<DirectReportsFeedbackTabProps> = ({
           </div>
         </div>
         <div className='bg-orange-50 border border-orange-200 rounded-lg p-4'>
-          <div className='text-sm font-medium text-orange-800'>Feedback Provided</div>
+          <div className='text-sm font-medium text-orange-800'>Colleague Feedback</div>
           <div className='mt-1 text-2xl font-bold text-orange-900'>
             {stats.colleagueFeedbackCount} ({stats.total > 0 ? Math.round((stats.colleagueFeedbackCount / stats.total) * 100) : 0}%)
+          </div>
+        </div>
+        <div className='bg-teal-50 border border-teal-200 rounded-lg p-4'>
+          <div className='text-sm font-medium text-teal-800'>Manager Feedback</div>
+          <div className='mt-1 text-2xl font-bold text-teal-900'>
+            {stats.managerFeedbackCount} ({stats.total > 0 ? Math.round((stats.managerFeedbackCount / stats.total) * 100) : 0}%)
           </div>
         </div>
       </div>

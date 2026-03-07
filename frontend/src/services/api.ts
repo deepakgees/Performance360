@@ -194,6 +194,12 @@ export const feedbackAPI = {
     api.get(`/api/manager-feedback/received/${userId}`),
 
   /**
+   * Get all manager feedback sent by a specific user (admin/manager only)
+   */
+  getManagerSentByUser: (userId: string) =>
+    api.get(`/api/manager-feedback/sent/${userId}`),
+
+  /**
    * Create new colleague feedback
    */
   createColleague: (data: any) => api.post('/api/colleague-feedback', data),

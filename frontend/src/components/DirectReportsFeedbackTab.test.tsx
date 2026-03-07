@@ -57,11 +57,11 @@ const mockColleagueFeedback = [
   },
 ];
 
-const mockManagerFeedback = [
+const mockManagerFeedbackSent = [
   {
     id: 'mf1',
-    receiverId: 'user1',
-    senderId: 'manager1',
+    senderId: 'user1',
+    receiverId: 'user3',
     year: '2024',
     quarter: 'Q1',
     managerOverallRating: 4,
@@ -95,8 +95,8 @@ describe('DirectReportsFeedbackTab', () => {
       data: mockColleagueFeedback,
     });
 
-    mockFeedbackAPI.getManagerReceivedByUser = jest.fn().mockResolvedValue({
-      data: mockManagerFeedback,
+    mockFeedbackAPI.getManagerSentByUser = jest.fn().mockResolvedValue({
+      data: mockManagerFeedbackSent,
     });
   });
 
@@ -125,12 +125,12 @@ describe('DirectReportsFeedbackTab', () => {
 
   it('should display summary statistics', async () => {
     renderComponent();
-    
+
     await waitFor(() => {
       expect(screen.getByText(/total reports/i)).toBeInTheDocument();
-      expect(screen.getByText(/all completed/i)).toBeInTheDocument();
       expect(screen.getByText(/self assessments/i)).toBeInTheDocument();
-      expect(screen.getByText(/feedback provided/i)).toBeInTheDocument();
+      expect(screen.getByText(/colleague feedback/i)).toBeInTheDocument();
+      expect(screen.getByText(/manager feedback/i)).toBeInTheDocument();
     });
   });
 
@@ -152,8 +152,8 @@ describe('DirectReportsFeedbackTab', () => {
       expect(mockAssessmentAPI.getByUserId).toHaveBeenCalledWith('user2');
       expect(mockFeedbackAPI.getColleagueSentByUser).toHaveBeenCalledWith('user1');
       expect(mockFeedbackAPI.getColleagueSentByUser).toHaveBeenCalledWith('user2');
-      expect(mockFeedbackAPI.getManagerReceivedByUser).toHaveBeenCalledWith('user1');
-      expect(mockFeedbackAPI.getManagerReceivedByUser).toHaveBeenCalledWith('user2');
+      expect(mockFeedbackAPI.getManagerSentByUser).toHaveBeenCalledWith('user1');
+      expect(mockFeedbackAPI.getManagerSentByUser).toHaveBeenCalledWith('user2');
     });
   });
 

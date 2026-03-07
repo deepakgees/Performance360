@@ -340,4 +340,132 @@ router.get(
   }
 );
 
+/**
+ * Get all manager feedback sent by a specific user (admin/manager only)
+ *
+ * Retrieves manager feedback items where the specified user is the sender.
+ * Only accessible by admins/managers for their reports.
+ *
+ * @route GET /manager-feedback/sent/:userId
+ * @auth Requires valid JWT token (admin/manager only)
+ *
+ * @param {string} req.params.userId - ID of the user to get feedback for
+ * @returns {Object} 200 - Array of manager feedback items sent by the user
+ * @returns {Object} 403 - Forbidden if not admin/manager
+ * @returns {Object} 500 - Internal server error
+ */
+router.get(
+  '/sent/:userId',
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { user: currentUser } = req as any;
+      const { userId } = req.params;
+
+      if (!userId || userId.trim().length === 0) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+
+      if (currentUser.id === userId) {
+        const feedback = await prisma.managerFeedback.findMany({
+          where: { senderId: userId },
+          include: {
+            receiver: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                role: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+        return res.json(feedback);
+      }
+
+      if (currentUser.role === 'ADMIN') {
+        const feedback = await prisma.managerFeedback.findMany({
+          where: { senderId: userId },
+          include: {
+            receiver: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                role: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+        return res.json(feedback);
+      }
+
+      if (currentUser.role === 'MANAGER') {
+        const directReport = await prisma.user.findFirst({
+          where: {
+            id: userId,
+            managerId: currentUser.id,
+            isActive: true,
+          },
+        });
+
+        if (directReport) {
+          const feedback = await prisma.managerFeedback.findMany({
+            where: { senderId: userId },
+            include: {
+              receiver: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  role: true,
+                },
+              },
+            },
+            orderBy: { createdAt: 'desc' },
+          });
+          return res.json(feedback);
+        }
+
+        const isIndirectReport = await checkIndirectReport(
+          currentUser.id,
+          userId
+        );
+        if (isIndirectReport) {
+          const feedback = await prisma.managerFeedback.findMany({
+            where: { senderId: userId },
+            include: {
+              receiver: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  role: true,
+                },
+              },
+            },
+            orderBy: { createdAt: 'desc' },
+          });
+          return res.json(feedback);
+        }
+
+        return res.status(403).json({
+          message:
+            'Access denied. You can only view feedback for your direct or indirect reports.',
+        });
+      }
+
+      return res.status(403).json({ message: 'Forbidden' });
+    } catch (error) {
+      console.error(
+        'Error fetching sent manager feedback for user:',
+        error
+      );
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+);
+
 export { router as managerFeedbackRoutes };

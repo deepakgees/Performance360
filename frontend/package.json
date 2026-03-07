@@ -35,6 +35,7 @@
   "scripts": {
     "start": "node ../scripts/kill-port.js 3000 && node start-dev.js",
     "debug": "node start-dev.js",
+    "prebuild": "react-scripts test --watchAll=false --passWithNoTests",
     "build": "cross-env CI=true react-scripts build",
     "build:dev": "react-scripts build",
     "build:check": "cross-env CI=true react-scripts build",
