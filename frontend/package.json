@@ -35,7 +35,7 @@
   "scripts": {
     "start": "node ../scripts/kill-port.js 3000 && node start-dev.js",
     "debug": "node start-dev.js",
-    "prebuild": "react-scripts test --watchAll=false --passWithNoTests",
+    "prebuild": "react-scripts test --coverage --watchAll=false",
     "build": "cross-env CI=true react-scripts build",
     "build:dev": "react-scripts build",
     "build:check": "cross-env CI=true react-scripts build",
@@ -60,7 +60,15 @@
       "!src/**/*.d.ts",
       "!src/**/*.test.{ts,tsx}"
     ],
-    "coverageReporters": ["text", "text-summary", "lcov", "html"]
+    "coverageReporters": ["text", "text-summary", "lcov", "html"],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    }
   },
   "eslintConfig": {
     "extends": [

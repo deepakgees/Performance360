@@ -91,6 +91,71 @@ describe('logger', () => {
     expect(mockAppendFileSync).not.toHaveBeenCalled();
   });
 
+  it('should log when LOG_LEVEL is DEBUG', () => {
+    process.env.LOG_LEVEL = 'DEBUG';
+    jest.isolateModules(() => {
+      const { logger } = require('./logger');
+      mockAppendFileSync.mockClear();
+      logger.logDebug('Debug message');
+      expect(mockAppendFileSync).toHaveBeenCalled();
+      expect(mockAppendFileSync.mock.calls[0][1]).toContain('DEBUG');
+    });
+  });
+
+  it('should default to INFO for invalid LOG_LEVEL', () => {
+    process.env.LOG_LEVEL = 'INVALID';
+    jest.isolateModules(() => {
+      const { logger } = require('./logger');
+      expect(logger.getCurrentLogLevel()).toBe('INFO');
+    });
+  });
+
+  it('should set LOG_LEVEL to ERROR when LOG_LEVEL is ERROR', () => {
+    process.env.LOG_LEVEL = 'ERROR';
+    jest.isolateModules(() => {
+      const { logger } = require('./logger');
+      expect(logger.getCurrentLogLevel()).toBe('ERROR');
+    });
+  });
+
+  it('should respect LOG_LEVEL WARN and not log INFO', () => {
+    process.env.LOG_LEVEL = 'WARN';
+    jest.isolateModules(() => {
+      const { logger } = require('./logger');
+      mockAppendFileSync.mockClear();
+      logger.logInfo('Info message');
+      expect(mockAppendFileSync).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should log database operation', () => {
+    const { logger } = require('./logger');
+    mockAppendFileSync.mockClear();
+    logger.logDatabaseOperation('create', 'User', 'admin@test.com');
+    expect(mockAppendFileSync).toHaveBeenCalled();
+    expect(mockAppendFileSync.mock.calls[0][1]).toContain('Database create on User');
+  });
+
+  it('should return empty array when readdirSync throws in getLogFiles', () => {
+    mockReaddirSync.mockImplementation(() => {
+      throw new Error('Permission denied');
+    });
+    const { logger } = require('./logger');
+    const files = logger.getLogFiles();
+    expect(files).toEqual([]);
+  });
+
+  it('should handle writeToFile when appendFileSync throws', () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockAppendFileSync.mockImplementation(() => {
+      throw new Error('Disk full');
+    });
+    const { logger } = require('./logger');
+    logger.logInfo('Test');
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to write to log file:', expect.any(Error));
+    consoleSpy.mockRestore();
+  });
+
   it('getLogFiles should return sorted log files', () => {
     mockReaddirSync.mockReturnValue(['2024-01-02.log', '2024-01-01.log', 'other.txt']);
     const { logger } = require('./logger');

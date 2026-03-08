@@ -60,11 +60,11 @@ describe('api service', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    api.get.mockResolvedValue({ data: {} });
-    api.post.mockResolvedValue({ data: {} });
-    api.patch.mockResolvedValue({ data: {} });
-    api.put.mockResolvedValue({ data: {} });
-    api.delete.mockResolvedValue({ data: {} });
+    (api.get as jest.Mock).mockResolvedValue({ data: {} });
+    (api.post as jest.Mock).mockResolvedValue({ data: {} });
+    (api.patch as jest.Mock).mockResolvedValue({ data: {} });
+    (api.put as jest.Mock).mockResolvedValue({ data: {} });
+    (api.delete as jest.Mock).mockResolvedValue({ data: {} });
     localStorage.clear();
     Object.defineProperty(window, 'location', {
       value: { ...originalLocation, href: '' },
@@ -328,7 +328,7 @@ describe('api service', () => {
         { page: 1, limit: 50 }
       );
       expect(api.get).toHaveBeenCalled();
-      const url = (api.get.mock.calls[0] as any)[0];
+      const url = ((api.get as jest.Mock).mock.calls[0] as any)[0];
       expect(url).toContain('user-statistics/u1');
       expect(url).toContain('startDate=2024-01-01');
       expect(url).toContain('endDate=2024-12-31');
@@ -357,7 +357,7 @@ describe('api service', () => {
         { startDate: '2024-01-01', endDate: '2024-12-31', memberIds: ['m1', 'm2'] }
       );
       expect(api.get).toHaveBeenCalled();
-      const url = (api.get.mock.calls[0] as any)[0];
+      const url = ((api.get as jest.Mock).mock.calls[0] as any)[0];
       expect(url).toContain('memberIds=m1');
       expect(url).toContain('memberIds=m2');
     });
@@ -519,7 +519,7 @@ describe('api service', () => {
         isActive: true,
       });
       expect(api.get).toHaveBeenCalled();
-      const url = (api.get.mock.calls[0] as any)[0];
+      const url = ((api.get as jest.Mock).mock.calls[0] as any)[0];
       expect(url).toContain('page=2');
       expect(url).toContain('limit=10');
       expect(url).toContain('userId=u1');

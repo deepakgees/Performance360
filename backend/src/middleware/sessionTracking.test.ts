@@ -69,6 +69,27 @@ describe('sessionTracking', () => {
         })
       );
     });
+
+    it('should call next without update when session not found', async () => {
+      global.__sessionMockFindFirst.mockResolvedValue(null);
+      const req = {
+        headers: { authorization: 'Bearer token123' },
+        user: { id: 'user-1' },
+      };
+      await trackSessionActivity(req as any, mockRes(), mockNext);
+      expect(mockNext).toHaveBeenCalled();
+      expect(global.__sessionMockUpdate).not.toHaveBeenCalled();
+    });
+
+    it('should call next when session tracking throws', async () => {
+      global.__sessionMockFindFirst.mockRejectedValue(new Error('DB error'));
+      const req = {
+        headers: { authorization: 'Bearer token123' },
+        user: { id: 'user-1' },
+      };
+      await trackSessionActivity(req as any, mockRes(), mockNext);
+      expect(mockNext).toHaveBeenCalled();
+    });
   });
 
   describe('checkSessionTimeout', () => {
@@ -108,6 +129,32 @@ describe('sessionTracking', () => {
       expect(mockJson).toHaveBeenCalledWith({
         message: 'Invalid session. Please login again.',
       });
+    });
+
+    it('should call next when session exists and not expired', async () => {
+      const future = new Date(Date.now() + 60000);
+      global.__sessionMockFindFirst.mockResolvedValue({
+        id: 'sess-1',
+        expiresAt: future,
+      });
+      const req = {
+        headers: { authorization: 'Bearer token123' },
+        user: { id: 'user-1' },
+      };
+      await checkSessionTimeout(req as any, mockRes(), mockNext);
+      expect(mockNext).toHaveBeenCalled();
+      expect(mockStatus).not.toHaveBeenCalled();
+    });
+
+    it('should return 500 when checkSessionTimeout throws', async () => {
+      global.__sessionMockFindFirst.mockRejectedValue(new Error('DB error'));
+      const req = {
+        headers: { authorization: 'Bearer token123' },
+        user: { id: 'user-1' },
+      };
+      await checkSessionTimeout(req as any, mockRes(), mockNext);
+      expect(mockStatus).toHaveBeenCalledWith(500);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Internal server error' });
     });
   });
 

@@ -76,6 +76,17 @@ describe('requestLogger', () => {
     requestLogger(req as any, mockRes() as any, mockNext);
     expect(require('../utils/logger').logger.logInfo).toHaveBeenCalledTimes(2);
   });
+
+  it('should log sanitized body when url contains register and originalUrl is undefined', () => {
+    const req = mockReq({
+      method: 'POST',
+      originalUrl: undefined,
+      url: '/api/auth/register',
+      body: { email: 'x@y.com' },
+    });
+    requestLogger(req as any, mockRes() as any, mockNext);
+    expect(require('../utils/logger').logger.logInfo).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('responseLogger', () => {

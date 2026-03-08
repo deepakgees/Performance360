@@ -100,4 +100,62 @@ describe('errorHandler', () => {
     expect(mockStatus).toHaveBeenCalledWith(500);
     expect(mockJson).toHaveBeenCalledWith({ message: 'Internal server error' });
   });
+
+  it('should return 400 for ExpressValidatorError', () => {
+    const err = new Error('Invalid input');
+    err.name = 'ExpressValidatorError';
+    errorHandler(err, mockReq() as any, mockRes(), () => {});
+    expect(mockStatus).toHaveBeenCalledWith(400);
+    expect(mockJson).toHaveBeenCalledWith({
+      message: 'Validation error',
+      errors: 'Invalid input',
+    });
+  });
+
+  it('should return 500 for Prisma error other than P2002', () => {
+    const err = new Error('Record not found');
+    (err as any).code = 'P2003';
+    errorHandler(err, mockReq() as any, mockRes(), () => {});
+    expect(mockStatus).toHaveBeenCalledWith(500);
+    expect(mockJson).toHaveBeenCalledWith({ message: 'Internal server error' });
+  });
+
+  it('should handle error without stack', () => {
+    const err = new Error('No stack');
+    err.stack = undefined;
+    errorHandler(err, mockReq() as any, mockRes(), () => {});
+    expect(mockStatus).toHaveBeenCalledWith(500);
+  });
+
+  it('should include prisma meta in errorInfo when err.meta is set', () => {
+    const err = new Error('Prisma error');
+    (err as any).code = 'P2002';
+    (err as any).meta = { target: ['email'] };
+    errorHandler(err, mockReq() as any, mockRes(), () => {});
+    expect(mockStatus).toHaveBeenCalledWith(409);
+  });
+
+  it('should handle error with code but no meta', () => {
+    const err = new Error('Prisma error');
+    (err as any).code = 'P2003';
+    (err as any).meta = undefined;
+    errorHandler(err, mockReq() as any, mockRes(), () => {});
+    expect(mockStatus).toHaveBeenCalledWith(500);
+  });
+
+  it('should use unknown ip when no x-forwarded-for or socket address', () => {
+    const req = mockReq({
+      headers: { 'user-agent': 'test' },
+      socket: { remoteAddress: undefined },
+    });
+    (req as any).headers['x-forwarded-for'] = undefined;
+    errorHandler(new Error('Test'), req as any, mockRes(), () => {});
+    expect(mockStatus).toHaveBeenCalledWith(500);
+  });
+
+  it('should handle error-like object with no stack or code', () => {
+    const err = { message: 'Minimal error', name: 'Error' };
+    errorHandler(err as any, mockReq() as any, mockRes(), () => {});
+    expect(mockStatus).toHaveBeenCalledWith(500);
+  });
 });

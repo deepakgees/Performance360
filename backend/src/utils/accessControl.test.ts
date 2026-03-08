@@ -73,5 +73,23 @@ describe('accessControl', () => {
       const result = await checkIndirectReport('mgr-1', 'emp-1');
       expect(result).toBe(true);
     });
+
+    it('should return false when prisma throws in checkIndirectReport', async () => {
+      global.__acMockFindMany.mockRejectedValue(new Error('DB error'));
+      const result = await checkIndirectReport('mgr-1', 'emp-1');
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('checkUserAccess manager indirect report', () => {
+    it('should return true when MANAGER and target is indirect report', async () => {
+      global.__acMockFindFirst.mockResolvedValueOnce(null);
+      global.__acMockFindMany.mockResolvedValue([{ id: 'sub-mgr' }]);
+      global.__acMockFindFirst
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ id: 'emp-1' });
+      const result = await checkUserAccess('mgr-1', 'MANAGER', 'emp-1');
+      expect(result).toBe(true);
+    });
   });
 });
