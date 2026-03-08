@@ -7,8 +7,10 @@ alwaysApply: true
 
 - Use **TypeScript** for all new code; strict mode is enabled. No `any` unless necessary; no `@ts-ignore` or `@ts-expect-error` without a brief comment.
 - **Before committing**: run `npm run build` in both `frontend/` and `backend/`. Fix any errors or warnings.
-- **Testing**: When making a new change (feature, bugfix, or behavior change), add or update tests. Choose unit tests (e.g. `frontend/src/**/*.test.tsx`, `tests/backend-tests/`) or E2E tests (`tests/playwright-tests/`) based on what best covers the change—unit for logic/components, E2E for user flows and critical paths.
+- **Testing**: When making a new change (feature, bugfix, or behavior change), **add or update unit tests** so the change is well covered. Include a **meaningful number of tests** (main behavior, key branches, success and error paths). Use mocks for APIs, context, and heavy children; follow `.cursor/rules/unit-testing.mdc` for structure, naming, and best practices. Prefer unit tests for logic/components; use E2E (`tests/playwright-tests/`) for critical user flows.
+- **Coverage floor**: **Unit test coverage must not go below 90%** for either frontend or backend. After any change that touches frontend or backend code, run `npm run test:coverage` in `frontend/` or `backend/` (as applicable). If coverage would drop below 90%, add or adjust tests so that coverage stays ≥90% before considering the change done.
+- **Backend**: For **any** new or changed backend code (routes, middleware, utils, or behavior), **always** add or update unit tests in `backend/src/**/*.test.ts`. Run `npm run test:coverage` in `backend/` to verify. No backend change without corresponding tests.
 - Follow **existing patterns** in the codebase. When adding features, mirror structure and style of similar files.
 - **Frontend** specifics (ESLint, React hooks, components): see `.cursor/rules/` and `frontend/.eslintrc.json`.
-- **Backend** specifics (logging, Prisma, routes): see `.cursor/rules/` backend and API rules.
+- **Backend** specifics (logging, Prisma, routes, unit tests): see `.cursor/rules/` backend and API rules.
 - All code (including AI-generated) must be reviewed; the developer is responsible for accepted changes.

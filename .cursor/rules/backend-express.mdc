@@ -31,3 +31,10 @@ alwaysApply: false
 
 - Use TypeScript with proper types. Add JSDoc `@fileoverview` for route and middleware modules where it helps.
 - Follow existing patterns in `backend/src/routes/auth.ts` and `backend/src/middleware/auth.ts` for structure and logging.
+
+## Unit tests (required)
+
+- **Always** add or update unit tests for any new or changed backend code (routes, middleware, utils). No backend change without corresponding tests.
+- Put tests next to source: `backend/src/**/*.test.ts` (e.g. `auth.ts` → `auth.test.ts`). Run `npm run test` or `npm run test:coverage` in `backend/`.
+- Use a **meaningful number of tests** (success, validation, auth, error paths). **Use mocks**: Mock Prisma and external services so tests are fast and deterministic. See `.cursor/rules/unit-testing.mdc` for practices.
+- Integration tests may live in `tests/backend-tests/`; unit tests live in `backend/src/`.

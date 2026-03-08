@@ -50,7 +50,12 @@ const RecentFeedback: React.FC = () => {
                         {item.title}
                       </p>
                       <p className='text-sm text-gray-500'>
-                        From: {item.sender?.firstName} {item.sender?.lastName}
+                        From:{' '}
+                        {item.isAnonymous
+                          ? 'Anonymous'
+                          : item.sender
+                            ? `${item.sender.firstName} ${item.sender.lastName}`
+                            : 'Unknown'}
                       </p>
                     </div>
                     <span className='text-xs text-gray-400'>

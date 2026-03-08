@@ -71,7 +71,7 @@ export function validatePasswordStrength(password: string): {
     };
   }
 
-  // Check for common weak passwords
+  // Check for common weak passwords (case-insensitive)
   const commonPasswords = [
     'password',
     'Password@123',
@@ -79,7 +79,8 @@ export function validatePasswordStrength(password: string): {
     'qwerty123',
     'admin123',
   ];
-  if (commonPasswords.includes(password.toLowerCase())) {
+  const lowercasedList = commonPasswords.map(p => p.toLowerCase());
+  if (lowercasedList.includes(password.toLowerCase())) {
     return {
       isValid: false,
       message: 'Password is too common. Please choose a stronger password',

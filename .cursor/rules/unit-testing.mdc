@@ -1,0 +1,79 @@
+---
+description: Unit testing best practices, mocks, and coverage requirements
+globs: "**/*.test.ts,**/*.test.tsx,tests/**/*.ts,tests/**/*.js"
+alwaysApply: false
+---
+
+# Unit testing rules
+
+## When to add or update tests
+
+- **Every change** that adds or modifies behavior: add or update unit tests (or E2E where appropriate).
+- **New components, pages, hooks, utils, or API routes**: include a corresponding test file with a **meaningful number of tests** (cover main behavior, key branches, and important error/edge cases).
+- **Bug fixes**: add a test that reproduces the bug and asserts the fix.
+- Prefer **unit tests** for logic, components, and APIs; use **E2E** for critical user flows.
+
+## Use mocks
+
+- **External dependencies**: Always mock APIs, fetch, and backend calls so tests are fast and deterministic. Use `jest.mock('../services/api')` (or equivalent) and provide `mockResolvedValue` / `mockRejectedValue` for each test case.
+- **Context and routing**: Mock `useAuth`, `useNavigate`, `useParams`, `useSearchParams`, etc., when testing components that depend on them, unless you are explicitly testing the provider or router.
+- **Heavy child components**: When testing a parent (e.g. a page), **mock child components** that perform their own API calls or complex logic. This keeps the test focused, avoids cascade failures, and prevents console noise (e.g. unmocked queries or missing data).
+- **Timers**: Use `jest.useFakeTimers()` and `jest.advanceTimersByTime()` for code that uses `setTimeout`/`setInterval`; restore with `jest.useRealTimers()` in `afterEach`.
+- **localStorage / window**: Clear or mock in `beforeEach`/`afterEach` when tests depend on them.
+
+## Structure and naming
+
+- **describe**: Component or module name (e.g. `describe('Login', () => { ... })`).
+- **it**: One clear behavior per test; use "should ..." or "renders ...", "calls X when Y".
+- **Arrange–Act–Assert (AAA)**: Structure each test: set up (Arrange), perform the action (Act), then assert outcomes (Assert).
+- **beforeEach**: Common setup (e.g. fresh QueryClient, clearing mocks). **afterEach**: Clear mocks (`jest.clearAllMocks()`) when using `jest.fn()`.
+
+## What to test
+
+- **Behavior and outcomes**, not implementation. Assert on visible text, roles, labels, and user-visible state.
+- **Success and error paths**: e.g. API success, API failure, validation errors, empty state.
+- **Key branches**: loading state, empty data, multiple items, redirects, role-based rendering.
+
+## Frontend (React + Testing Library)
+
+- Prefer **getByRole**, **getByLabelText**, **getByPlaceholderText**; use **getByTestId** only when necessary (e.g. for layout or non-semantic elements).
+- Wrap with **QueryClientProvider** when the component uses `useQuery`/`useMutation`; use **MemoryRouter** (and **Routes**/**Route**) when the component uses routing.
+- Use **userEvent** for user interactions (click, type); use **waitFor** / **findBy** for async updates.
+- Keep tests **isolated**: each test should be runnable alone; avoid relying on order or shared mutable state.
+
+## Backend / Node
+
+- Mock Prisma or DB layer in unit tests; use real DB only in integration tests if needed.
+- Test route handlers with mock request/response; assert status codes, response body, and calls to services.
+
+## Coverage
+
+- **Frontend**: Run `npm run test:coverage` in `frontend/` to generate coverage. Reports in terminal and `frontend/coverage/`.
+- **Backend**: Run `npm run test:coverage` in `backend/` to generate coverage. Reports in terminal and `backend/coverage/`. Test files live next to source (`src/**/*.test.ts`).
+- Aim to maintain or improve coverage with each change; avoid leaving large uncovered blocks without at least smoke or key-path tests.
+
+## Example (frontend component with mocks)
+
+```typescript
+jest.mock('../contexts/AuthContext', () => ({ useAuth: () => mockUseAuth() }));
+jest.mock('../services/api');
+
+describe('Login', () => {
+  beforeEach(() => { jest.clearAllMocks(); });
+
+  it('should call login and navigate on submit', async () => {
+    mockLogin.mockResolvedValue(undefined);
+    render(<MemoryRouter><Login /></MemoryRouter>);
+    await userEvent.type(screen.getByPlaceholderText('Email'), 'a@b.com');
+    await userEvent.type(screen.getByPlaceholderText('Password'), 'pass');
+    await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+    expect(mockLogin).toHaveBeenCalledWith('a@b.com', 'pass');
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+});
+```
+
+## Reference
+
+- Existing tests: `frontend/src/**/*.test.tsx`, `frontend/src/**/*.test.ts`, `tests/backend-tests/`.
+- Setup: `frontend/src/setupTests.ts` (jest-dom, matchMedia, ResizeObserver, console filters).

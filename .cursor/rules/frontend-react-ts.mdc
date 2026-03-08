@@ -61,4 +61,10 @@ const title = props.title; // ESLint: unused variable
 - Group imports: React first, then third-party, then local. Remove unused imports.
 - Code must pass `npm run build` in `frontend/` (strict/CI; no warnings).
 
+## Unit tests
+
+- For new or changed components/pages/hooks/utils: add or update tests in `frontend/src/**/*.test.tsx` or `*.test.ts`. Include a **meaningful number of tests** (main behavior, key branches, errors).
+- **Use mocks**: Mock `../services/api`, `useAuth`, `useNavigate`, and heavy child components so tests are fast and free of console noise. See `.cursor/rules/unit-testing.mdc` for full practices.
+- Run `npm run test:coverage` in `frontend/` to check coverage when changing code.
+
 Reference existing components for structure, e.g. `frontend/src/components/Layout.tsx` or similar.

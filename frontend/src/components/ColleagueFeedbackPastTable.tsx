@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 
 interface FeedbackItem {
   id: string;
-  senderId: string;
+  senderId?: string | null;
   receiverId: string;
-  sender: {
+  sender?: {
     firstName: string;
     lastName: string;
-  };
+  } | null;
   receiver: {
     firstName: string;
     lastName: string;
@@ -88,8 +88,14 @@ const ColleagueFeedbackPastTable: React.FC<ColleagueFeedbackPastTableProps> = ({
             bValue =
               `${b.receiver.firstName} ${b.receiver.lastName}`.toLowerCase();
           } else {
-            aValue = `${a.sender.firstName} ${a.sender.lastName}`.toLowerCase();
-            bValue = `${b.sender.firstName} ${b.sender.lastName}`.toLowerCase();
+            aValue =
+              a.isAnonymous || !a.sender
+                ? 'anonymous'
+                : `${a.sender.firstName} ${a.sender.lastName}`.toLowerCase();
+            bValue =
+              b.isAnonymous || !b.sender
+                ? 'anonymous'
+                : `${b.sender.firstName} ${b.sender.lastName}`.toLowerCase();
           }
           break;
         case 'readyToWork':
@@ -232,8 +238,10 @@ const ColleagueFeedbackPastTable: React.FC<ColleagueFeedbackPastTableProps> = ({
                   {feedback.isAnonymous
                     ? 'Anonymous'
                     : showReceiver
-                    ? `${feedback.receiver.firstName} ${feedback.receiver.lastName}`
-                    : `${feedback.sender.firstName} ${feedback.sender.lastName}`}
+                      ? `${feedback.receiver.firstName} ${feedback.receiver.lastName}`
+                      : feedback.sender
+                        ? `${feedback.sender.firstName} ${feedback.sender.lastName}`
+                        : 'Unknown'}
                 </td>
                 <td className='px-6 py-4 text-sm text-gray-900 border-r border-gray-200'>
                   <div className='flex items-center'>

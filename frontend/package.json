@@ -46,7 +46,21 @@
     "delete:pm2": "pm2 delete ecosystem.config.js",
     "logs:pm2": "pm2 logs feedback-app-frontend",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(axios)/)"
+    ],
+    "collectCoverageFrom": [
+      "src/utils/**/*.{ts,tsx}",
+      "src/contexts/**/*.{ts,tsx}",
+      "src/services/**/*.{ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/**/*.test.{ts,tsx}"
+    ],
+    "coverageReporters": ["text", "text-summary", "lcov", "html"]
   },
   "eslintConfig": {
     "extends": [

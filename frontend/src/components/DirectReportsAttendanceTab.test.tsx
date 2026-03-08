@@ -105,7 +105,7 @@ describe('DirectReportsAttendanceTab', () => {
 
   it('should display header with attendance compliance title', () => {
     renderComponent();
-    expect(screen.getByText(/attendance compliance/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /attendance compliance/i })).toBeInTheDocument();
   });
 
   it('should display loading state initially', () => {

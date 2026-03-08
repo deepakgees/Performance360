@@ -26,8 +26,6 @@ const getApiBaseURL = (): string => {
   const currentHost = window.location.hostname;
   const backendPort = '3001';
 
-  console.log('currentHost', currentHost);
-
   // If running on localhost, use localhost for backend too
   if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
     return `http://localhost:${backendPort}`;

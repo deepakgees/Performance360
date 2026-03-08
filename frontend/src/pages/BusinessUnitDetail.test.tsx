@@ -193,9 +193,9 @@ describe('BusinessUnitDetail', () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText('Members')).toBeInTheDocument();
-      expect(screen.getByText('John Doe')).toBeInTheDocument();
-      expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Members' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'John Doe' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Jane Smith' })).toBeInTheDocument();
     });
   });
 
@@ -203,10 +203,15 @@ describe('BusinessUnitDetail', () => {
     renderComponent();
 
     await waitFor(() => {
-      const attendanceTab = screen.getByText('Attendance Statistics');
-      fireEvent.click(attendanceTab);
-      
-      expect(screen.getByText(/compliance rate/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Members' })).toBeInTheDocument();
+    });
+
+    const attendanceTabs = screen.getAllByText('Attendance Statistics');
+    fireEvent.click(attendanceTabs[0]);
+
+    await waitFor(() => {
+      const complianceElements = screen.getAllByText(/compliance rate/i);
+      expect(complianceElements.length).toBeGreaterThan(0);
     });
   });
 
@@ -214,10 +219,15 @@ describe('BusinessUnitDetail', () => {
     renderComponent();
 
     await waitFor(() => {
-      const feedbackTab = screen.getByText('Previous Qtr Feedback Completion');
-      fireEvent.click(feedbackTab);
-      
-      expect(screen.getByText(/feedback completion/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Members' })).toBeInTheDocument();
+    });
+
+    const feedbackTabs = screen.getAllByText('Previous Qtr Feedback Completion');
+    fireEvent.click(feedbackTabs[0]);
+
+    await waitFor(() => {
+      const feedbackElements = screen.getAllByText(/feedback completion/i);
+      expect(feedbackElements.length).toBeGreaterThan(0);
     });
   });
 

@@ -29,6 +29,15 @@ const router = Router();
 const prisma = new PrismaClient();
 
 /**
+ * Sanitize received feedback so anonymous items never expose sender (defense-in-depth).
+ */
+function sanitizeReceivedFeedback<T extends { isAnonymous: boolean; sender: unknown }>(
+  feedback: T[]
+): T[] {
+  return feedback.map(f => (f.isAnonymous ? { ...f, sender: null } : f));
+}
+
+/**
  * Get all colleague feedback received by the authenticated user
  *
  * Retrieves colleague feedback items where the current user is the receiver,
@@ -63,7 +72,7 @@ router.get(
         orderBy: { createdAt: 'desc' },
       });
 
-      res.json(feedback);
+      res.json(sanitizeReceivedFeedback(feedback));
     } catch (error) {
       console.error('Error fetching received colleague feedback:', error);
       res.status(500).json({ message: 'Internal server error' });
@@ -251,10 +260,10 @@ router.post(
         url
       );
 
-      // Create feedback
+      // Create feedback (do not store senderId when anonymous - non-traceable)
       const feedback = await prisma.colleagueFeedback.create({
         data: {
-          senderId: userId!,
+          senderId: isAnonymous ? null : userId!,
           receiverId,
           year,
           quarter,
@@ -429,11 +438,11 @@ router.patch(
           .json({ message: 'Colleague feedback not found' });
       }
 
-      // Only the receiver or sender can update status
-      if (
-        feedback.receiverId !== (req as any).user.id &&
-        feedback.senderId !== (req as any).user.id
-      ) {
+      // Only the receiver or (when present) the sender can update status; anonymous feedback has no sender
+      const currentUserId = (req as any).user.id;
+      const isReceiver = feedback.receiverId === currentUserId;
+      const isSender = feedback.senderId != null && feedback.senderId === currentUserId;
+      if (!isReceiver && !isSender) {
         return res.status(403).json({ message: 'Not authorized' });
       }
 
@@ -460,7 +469,8 @@ router.patch(
         },
       });
 
-      res.json(updatedFeedback);
+      const sanitized = sanitizeReceivedFeedback([updatedFeedback]);
+      res.json(sanitized[0]);
     } catch (error) {
       console.error('Error updating colleague feedback status:', error);
       res.status(500).json({ message: 'Internal server error' });
@@ -511,7 +521,7 @@ router.get(
           },
           orderBy: { createdAt: 'desc' },
         });
-        return res.json(feedback);
+        return res.json(sanitizeReceivedFeedback(feedback));
       }
 
       // ADMIN: Can view any user's feedback
@@ -530,7 +540,7 @@ router.get(
           },
           orderBy: { createdAt: 'desc' },
         });
-        return res.json(feedback);
+        return res.json(sanitizeReceivedFeedback(feedback));
       }
 
       // MANAGER: Can only view their direct/indirect reports' feedback
@@ -559,7 +569,7 @@ router.get(
             },
             orderBy: { createdAt: 'desc' },
           });
-          return res.json(feedback);
+          return res.json(sanitizeReceivedFeedback(feedback));
         }
 
         // Check if it's an indirect report
@@ -582,7 +592,7 @@ router.get(
             },
             orderBy: { createdAt: 'desc' },
           });
-          return res.json(feedback);
+          return res.json(sanitizeReceivedFeedback(feedback));
         }
 
         return res.status(403).json({

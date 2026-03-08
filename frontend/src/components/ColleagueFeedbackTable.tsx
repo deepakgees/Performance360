@@ -2,12 +2,12 @@ import React from 'react';
 
 interface Feedback {
   id: string;
-  sender: {
+  sender?: {
     id: string;
     firstName: string;
     lastName: string;
     role: string;
-  };
+  } | null;
   year: string;
   quarter: string;
   status: string;
@@ -89,7 +89,9 @@ const ColleagueFeedbackTable: React.FC<ColleagueFeedbackTableProps> = ({
                 <td className='px-6 py-4 text-sm font-medium text-gray-900 border-r border-gray-200'>
                   {feedback.isAnonymous
                     ? 'Anonymous'
-                    : `${feedback.sender.firstName} ${feedback.sender.lastName}`}
+                    : feedback.sender
+                      ? `${feedback.sender.firstName} ${feedback.sender.lastName}`
+                      : 'Unknown'}
                 </td>
                 <td className='px-6 py-4 text-sm text-gray-900 border-r border-gray-200'>
                   {feedback.year}
