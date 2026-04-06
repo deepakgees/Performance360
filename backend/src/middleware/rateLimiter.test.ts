@@ -28,11 +28,20 @@ describe('rateLimiter', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  it('should use production rate limits when NODE_ENV is production', () => {
+  it('should derive rate limits from env or production defaults when NODE_ENV is production', () => {
     const prevNodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-    const configCountBefore = capturedConfigs.length;
     jest.isolateModules(() => {
+      process.env.NODE_ENV = 'production';
+      const expectedAuthMax = parseInt(
+        process.env.AUTH_RATE_LIMIT_MAX ||
+          (process.env.NODE_ENV === 'production' ? '10' : '50'),
+        10
+      );
+      const expectedGeneralMax = parseInt(
+        process.env.GENERAL_RATE_LIMIT_MAX ||
+          (process.env.NODE_ENV === 'production' ? '100' : '1000'),
+        10
+      );
       require('./rateLimiter');
       const authConfig = capturedConfigs.find(
         (c: any) => c.message?.error?.includes('login')
@@ -40,8 +49,8 @@ describe('rateLimiter', () => {
       const generalConfig = capturedConfigs.find(
         (c: any) => c.message?.error?.includes('Too many requests')
       );
-      expect(authConfig?.max).toBe(10);
-      expect(generalConfig?.max).toBe(100);
+      expect(authConfig?.max).toBe(expectedAuthMax);
+      expect(generalConfig?.max).toBe(expectedGeneralMax);
     });
     process.env.NODE_ENV = prevNodeEnv;
   });

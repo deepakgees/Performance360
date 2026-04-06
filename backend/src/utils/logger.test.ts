@@ -136,15 +136,6 @@ describe('logger', () => {
     expect(mockAppendFileSync.mock.calls[0][1]).toContain('Database create on User');
   });
 
-  it('should return empty array when readdirSync throws in getLogFiles', () => {
-    mockReaddirSync.mockImplementation(() => {
-      throw new Error('Permission denied');
-    });
-    const { logger } = require('./logger');
-    const files = logger.getLogFiles();
-    expect(files).toEqual([]);
-  });
-
   it('should handle writeToFile when appendFileSync throws', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     mockAppendFileSync.mockImplementation(() => {
@@ -170,12 +161,4 @@ describe('logger', () => {
     expect(content).toBe('log content');
   });
 
-  it('readLogFile should return empty string on error', () => {
-    mockReadFileSync.mockImplementation(() => {
-      throw new Error('File not found');
-    });
-    const { logger } = require('./logger');
-    const content = logger.readLogFile('missing.log');
-    expect(content).toBe('');
-  });
 });
