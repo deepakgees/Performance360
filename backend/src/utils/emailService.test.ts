@@ -157,11 +157,25 @@ describe('emailService', () => {
       process.env.SMTP_PORT = '587';
       process.env.SMTP_USER = 'user';
       process.env.SMTP_PASS = 'pass';
+      delete process.env.SMTP_FROM_EMAIL;
       process.env.SMTP_FROM_NAME = '"Performance360"';
       getSendMailMock().mockResolvedValue({ messageId: 'id' });
       await sendPasswordResetEmail('user@test.com', 'User', 'token123');
       const call = getSendMailMock().mock.calls[0][0];
       expect(call.from).toBe('"Performance360" <user>');
+    });
+
+    it('should normalize SMTP_FROM_EMAIL when the env value includes outer quotes', async () => {
+      process.env.SMTP_HOST = 'smtp.test.com';
+      process.env.SMTP_PORT = '587';
+      process.env.SMTP_USER = 'user';
+      process.env.SMTP_PASS = 'pass';
+      delete process.env.SMTP_FROM_NAME;
+      process.env.SMTP_FROM_EMAIL = '"noreply@performance360.com"';
+      getSendMailMock().mockResolvedValue({ messageId: 'id' });
+      await sendPasswordResetEmail('user@test.com', 'User', 'token123');
+      const call = getSendMailMock().mock.calls[0][0];
+      expect(call.from).toBe('"Performance360" <noreply@performance360.com>');
     });
 
     it('should create transporter with port 465 (secure)', async () => {

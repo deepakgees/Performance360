@@ -9,16 +9,31 @@ import nodemailer from 'nodemailer';
 import { logger } from './logger';
 
 /**
- * SMTP_FROM_NAME is sometimes set with surrounding quotes (secret managers, JSON, .env paste).
- * Strip one pair of outer ASCII double quotes so the From header is not ""Name"".
+ * Env values from secret managers / YAML / JSON often include a single pair of outer "...".
+ * Strip them so we do not emit ""Name"" or <"addr@x.com"> in headers.
  */
-function normalizeSmtpFromName(raw: string | undefined, fallback: string): string {
-  const base = (raw?.trim() || fallback).trim();
+function stripOuterDoubleQuotes(value: string): string {
+  const base = value.trim();
   if (base.length >= 2 && base.startsWith('"') && base.endsWith('"')) {
-    const inner = base.slice(1, -1).trim();
-    return inner.length > 0 ? inner : fallback;
+    return base.slice(1, -1).trim();
   }
-  return base.length > 0 ? base : fallback;
+  return base;
+}
+
+function normalizeSmtpFromName(raw: string | undefined, fallback: string): string {
+  const initial = (raw?.trim() || fallback).trim();
+  const stripped = stripOuterDoubleQuotes(initial);
+  return stripped.length > 0 ? stripped : fallback;
+}
+
+/** Prefer SMTP_FROM_EMAIL, then SMTP_USER; strip outer quotes; empty after strip falls through. */
+function resolveSmtpFromEmail(): string | undefined {
+  const tryRaw = (raw: string | undefined): string | undefined => {
+    if (!raw?.trim()) return undefined;
+    const stripped = stripOuterDoubleQuotes(raw.trim());
+    return stripped.length > 0 ? stripped : undefined;
+  };
+  return tryRaw(process.env.SMTP_FROM_EMAIL) ?? tryRaw(process.env.SMTP_USER);
 }
 
 /**
@@ -165,8 +180,11 @@ export const sendPasswordResetEmail = async (
       process.env.SMTP_FROM_NAME,
       'Performance360'
     );
-    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
-    const replyTo = process.env.SMTP_REPLY_TO || 'noreply@performance360.com';
+    const fromEmail = resolveSmtpFromEmail();
+    const replyTo =
+      stripOuterDoubleQuotes(
+        (process.env.SMTP_REPLY_TO || 'noreply@performance360.com').trim()
+      ) || 'noreply@performance360.com';
     const hideSenderEmail = process.env.SMTP_HIDE_SENDER_EMAIL === 'true';
     
     // Format the "from" field
@@ -328,8 +346,11 @@ export const sendCustomizedEmailWithResetLink = async (
       process.env.SMTP_FROM_NAME,
       'Performance360'
     );
-    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
-    const replyTo = process.env.SMTP_REPLY_TO || 'noreply@performance360.com';
+    const fromEmail = resolveSmtpFromEmail();
+    const replyTo =
+      stripOuterDoubleQuotes(
+        (process.env.SMTP_REPLY_TO || 'noreply@performance360.com').trim()
+      ) || 'noreply@performance360.com';
     const hideSenderEmail = process.env.SMTP_HIDE_SENDER_EMAIL === 'true';
     
     // Format the "from" field
