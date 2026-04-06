@@ -25,14 +25,17 @@ import jiraTicketsRoutes from './routes/jira-tickets';
 import { managerFeedbackRoutes } from './routes/manager-feedback';
 import monthlyAttendanceRoutes from './routes/monthly-attendance';
 import quarterlyPerformanceRoutes from './routes/quarterly-performance';
+import { sessionRoutes } from './routes/sessions';
 import { teamRoutes } from './routes/teams';
 import { userRoutes } from './routes/users';
-import { sessionRoutes } from './routes/sessions';
 
 import { authenticateToken } from './middleware/auth';
-import { checkSessionTimeout, trackSessionActivity } from './middleware/sessionTracking';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger, responseLogger } from './middleware/requestLogger';
+import {
+  checkSessionTimeout,
+  trackSessionActivity,
+} from './middleware/sessionTracking';
 import { logger } from './utils/logger';
 
 // Load environment variables from .env file
@@ -158,9 +161,9 @@ app.use('/api/auth', authRoutes);
 // Test cleanup routes (no authentication required) - only in non-production
 // Also enable in test environment or if explicitly enabled via env var
 const nodeEnv = process.env.NODE_ENV;
-const enableTestRoutes = 
+const enableTestRoutes =
   nodeEnv === 'test' ||
-  (nodeEnv !== undefined && nodeEnv !== 'production') || 
+  (nodeEnv !== undefined && nodeEnv !== 'production') ||
   process.env.ENABLE_TEST_ROUTES === 'true';
 
 // Check if ENABLE_TEST_ROUTES is explicitly set to 'true'
@@ -178,26 +181,56 @@ if (enableTestRoutes) {
 } else {
   console.log('⚠️  Test cleanup routes disabled (production mode)');
   console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
-  console.log('   To enable: Set NODE_ENV=development or ENABLE_TEST_ROUTES=true');
+  console.log(
+    '   To enable: Set NODE_ENV=development or ENABLE_TEST_ROUTES=true'
+  );
 }
 
 // Display prominent security warning if ENABLE_TEST_ROUTES is explicitly enabled
 if (isTestRoutesExplicitlyEnabled) {
   console.log('');
-  console.log('╔══════════════════════════════════════════════════════════════════════════════╗');
-  console.log('║                                                                              ║');
-  console.log('║                    ⚠️  SECURITY WARNING ⚠️                                   ║');
-  console.log('║                                                                              ║');
-  console.log('║  ENABLE_TEST_ROUTES=true is set. This configuration is NOT SECURE and      ║');
-  console.log('║  should ONLY be used for testing purposes.                                  ║');
-  console.log('║                                                                              ║');
-  console.log('║  ⛔ DO NOT use this in production environments                              ║');
-  console.log('║  ⛔ Test routes expose unauthenticated endpoints                            ║');
-  console.log('║  ⛔ This can lead to unauthorized data access and manipulation              ║');
-  console.log('║                                                                              ║');
-  console.log('║  Use this ONLY for local development and testing.                          ║');
-  console.log('║                                                                              ║');
-  console.log('╚══════════════════════════════════════════════════════════════════════════════╝');
+  console.log(
+    '╔══════════════════════════════════════════════════════════════════════════════╗'
+  );
+  console.log(
+    '║                                                                              ║'
+  );
+  console.log(
+    '║                    ⚠️  SECURITY WARNING ⚠️                                   ║'
+  );
+  console.log(
+    '║                                                                              ║'
+  );
+  console.log(
+    '║  ENABLE_TEST_ROUTES=true is set. This configuration is NOT SECURE and      ║'
+  );
+  console.log(
+    '║  should ONLY be used for testing purposes.                                  ║'
+  );
+  console.log(
+    '║                                                                              ║'
+  );
+  console.log(
+    '║  ⛔ DO NOT use this in production environments                              ║'
+  );
+  console.log(
+    '║  ⛔ Test routes expose unauthenticated endpoints                            ║'
+  );
+  console.log(
+    '║  ⛔ This can lead to unauthorized data access and manipulation              ║'
+  );
+  console.log(
+    '║                                                                              ║'
+  );
+  console.log(
+    '║  Use this ONLY for local development and testing.                          ║'
+  );
+  console.log(
+    '║                                                                              ║'
+  );
+  console.log(
+    '╚══════════════════════════════════════════════════════════════════════════════╝'
+  );
   console.log('');
 }
 
@@ -211,32 +244,16 @@ const protectedRoutes = [
 ];
 
 app.use('/api/users', ...protectedRoutes, userRoutes);
-app.use(
-  '/api/colleague-feedback',
-  ...protectedRoutes,
-  colleagueFeedbackRoutes
-);
-app.use(
-  '/api/manager-feedback',
-  ...protectedRoutes,
-  managerFeedbackRoutes
-);
-app.use(
-  '/api/assessments',
-  ...protectedRoutes,
-  assessmentRoutes
-);
+app.use('/api/colleague-feedback', ...protectedRoutes, colleagueFeedbackRoutes);
+app.use('/api/manager-feedback', ...protectedRoutes, managerFeedbackRoutes);
+app.use('/api/assessments', ...protectedRoutes, assessmentRoutes);
 app.use(
   '/api/quarterly-performance',
   ...protectedRoutes,
   quarterlyPerformanceRoutes
 );
 
-app.use(
-  '/api/jira-statistics',
-  ...protectedRoutes,
-  jiraStatisticsRoutes
-);
+app.use('/api/jira-statistics', ...protectedRoutes, jiraStatisticsRoutes);
 
 app.use('/api/jira-tickets', responseLogger, jiraTicketsRoutes);
 app.use(
@@ -250,16 +267,8 @@ app.use(
   achievementsObservationsRoutes
 );
 app.use('/api/teams', ...protectedRoutes, teamRoutes);
-app.use(
-  '/api/business-units',
-  ...protectedRoutes,
-  businessUnitRoutes
-);
-app.use(
-  '/api/monthly-attendance',
-  ...protectedRoutes,
-  monthlyAttendanceRoutes
-);
+app.use('/api/business-units', ...protectedRoutes, businessUnitRoutes);
+app.use('/api/monthly-attendance', ...protectedRoutes, monthlyAttendanceRoutes);
 
 // Session management routes (Admin only)
 app.use('/api/sessions', responseLogger, sessionRoutes);
@@ -286,14 +295,22 @@ app.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`📝 Logs directory: backend/logs/`);
   console.log(`📅 Log files: Date-based (YYYY-MM-DD.log)`);
-  
+
   // Display security warning again at server startup if test routes are enabled
   if (isTestRoutesExplicitlyEnabled) {
     console.log('');
-    console.log('╔══════════════════════════════════════════════════════════════════════════════╗');
-    console.log('║                    ⚠️  SECURITY WARNING: TEST MODE ACTIVE ⚠️                ║');
-    console.log('║  ENABLE_TEST_ROUTES=true - NOT SECURE - USE ONLY FOR TESTING               ║');
-    console.log('╚══════════════════════════════════════════════════════════════════════════════╝');
+    console.log(
+      '╔══════════════════════════════════════════════════════════════════════════════╗'
+    );
+    console.log(
+      '║                    ⚠️  SECURITY WARNING: TEST MODE ACTIVE ⚠️                ║'
+    );
+    console.log(
+      '║  ENABLE_TEST_ROUTES=true - NOT SECURE - USE ONLY FOR TESTING               ║'
+    );
+    console.log(
+      '╚══════════════════════════════════════════════════════════════════════════════╝'
+    );
     console.log('');
   }
 });

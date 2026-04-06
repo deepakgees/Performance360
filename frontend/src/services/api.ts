@@ -362,8 +362,7 @@ export const usersAPI = {
    * @param {string} id - User ID
    * @returns {Promise} Axios response with confirmation message
    */
-  sendResetLink: (id: string) =>
-    api.post(`/api/users/${id}/send-reset-link`),
+  sendResetLink: (id: string) => api.post(`/api/users/${id}/send-reset-link`),
 };
 
 /**
@@ -701,8 +700,7 @@ export const businessUnitsAPI = {
   sendEmailToBusinessUnit: (
     businessUnitId: string,
     emailData: { subject: string; message: string }
-  ) =>
-    api.post(`/api/business-units/${businessUnitId}/send-email`, emailData),
+  ) => api.post(`/api/business-units/${businessUnitId}/send-email`, emailData),
 };
 
 /**
@@ -725,9 +723,11 @@ export const monthlyAttendanceAPI = {
     if (filters?.userId) params.append('userId', filters.userId);
     if (filters?.year) params.append('year', filters.year.toString());
     if (filters?.month) params.append('month', filters.month.toString());
-    
+
     const queryString = params.toString();
-    return api.get(`/api/monthly-attendance${queryString ? `?${queryString}` : ''}`);
+    return api.get(
+      `/api/monthly-attendance${queryString ? `?${queryString}` : ''}`
+    );
   },
 
   /**
@@ -735,8 +735,7 @@ export const monthlyAttendanceAPI = {
    * @param {string} userId - User ID
    * @returns {Promise} Axios response with attendance records list
    */
-  getByUserId: (userId: string) =>
-    api.get(`/api/monthly-attendance/${userId}`),
+  getByUserId: (userId: string) => api.get(`/api/monthly-attendance/${userId}`),
 
   /**
    * Create a new monthly attendance record (admin only)
@@ -779,15 +778,18 @@ export const monthlyAttendanceAPI = {
    * @param {string} [data.reasonForNonCompliance] - Reason for non-compliance
    * @returns {Promise} Axios response with updated attendance record
    */
-  update: (id: string, data: {
-    workingDays?: number;
-    presentInOffice?: number;
-    leavesAvailed?: number;
-    leaveNotificationsInTeamsChannel?: number;
-    weeklyCompliance?: boolean | null;
-    exceptionApproved?: boolean | null;
-    reasonForNonCompliance?: string;
-  }) => api.put(`/api/monthly-attendance/${id}`, data),
+  update: (
+    id: string,
+    data: {
+      workingDays?: number;
+      presentInOffice?: number;
+      leavesAvailed?: number;
+      leaveNotificationsInTeamsChannel?: number;
+      weeklyCompliance?: boolean | null;
+      exceptionApproved?: boolean | null;
+      reasonForNonCompliance?: string;
+    }
+  ) => api.put(`/api/monthly-attendance/${id}`, data),
 
   /**
    * Delete a monthly attendance record (admin only)
@@ -801,18 +803,20 @@ export const monthlyAttendanceAPI = {
    * @param {Array} records - Array of attendance records to create/update
    * @returns {Promise} Axios response with bulk update results
    */
-  bulkUpdate: (records: Array<{
-    userId: string;
-    month: number;
-    year: number;
-    workingDays: number;
-    presentInOffice: number;
-    leavesAvailed?: number;
-    leaveNotificationsInTeamsChannel?: number;
-    weeklyCompliance?: boolean | null;
-    exceptionApproved?: boolean | null;
-    reasonForNonCompliance?: string;
-  }>) => api.post('/api/monthly-attendance/bulk', { records }),
+  bulkUpdate: (
+    records: Array<{
+      userId: string;
+      month: number;
+      year: number;
+      workingDays: number;
+      presentInOffice: number;
+      leavesAvailed?: number;
+      leaveNotificationsInTeamsChannel?: number;
+      weeklyCompliance?: boolean | null;
+      exceptionApproved?: boolean | null;
+      reasonForNonCompliance?: string;
+    }>
+  ) => api.post('/api/monthly-attendance/bulk', { records }),
 
   /**
    * Update manager comment (reasonForNonCompliance) for a monthly attendance record (managers only)
@@ -821,7 +825,9 @@ export const monthlyAttendanceAPI = {
    * @returns {Promise} Axios response with updated attendance record
    */
   updateComment: (id: string, reasonForNonCompliance: string | null) =>
-    api.patch(`/api/monthly-attendance/${id}/comment`, { reasonForNonCompliance }),
+    api.patch(`/api/monthly-attendance/${id}/comment`, {
+      reasonForNonCompliance,
+    }),
 };
 
 /**

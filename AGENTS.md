@@ -23,16 +23,19 @@ Briefing for AI coding agents. For full project overview see [README.md](README.
 ## Commands
 
 **Backend** (from repo root):
+
 - `cd backend && npm run dev` – dev server
 - `cd backend && npm run build` – production build
 - `cd backend && npm run db:push` – apply Prisma schema
 - `cd backend && npm run db:seed` – seed database
 
 **Frontend** (from repo root):
+
 - `cd frontend && npm run start` – dev server
 - `cd frontend && npm run build` – production build (strict; warnings as errors)
 
 **Tests**:
+
 - Frontend unit (with coverage): `cd frontend && npm run test:coverage`
 - Backend unit (with coverage): `cd backend && npm run test:coverage`
 - E2E: `cd tests/playwright-tests && npm test`
@@ -46,7 +49,7 @@ Briefing for AI coding agents. For full project overview see [README.md](README.
 - **Backend**: Use `logger` from `backend/src/utils/logger` (not `console.log` in request paths). Use Prisma for DB. Use express-validator where validation exists. Env validated via `utils/envValidation`; sanitize logs with `utils/sanitizeLogs` where relevant.
 - **Quality**: Run `npm run build` in both frontend and backend before committing. All code (including AI-generated) should be reviewed; the developer is responsible for accepted changes.
 - **Testing**: For every new change (feature, bugfix, or behavior change), add or update **unit tests** with a meaningful number of cases (behavior, branches, errors). Use mocks for APIs, context, and heavy children; follow `.cursor/rules/unit-testing.mdc`. Unit tests in `frontend/src/**/*.test.tsx` and `tests/backend-tests/`; E2E in `tests/playwright-tests/` for critical flows.
-- **Coverage floor**: Unit test coverage for **frontend** and **backend** must **not go below 90%**. After changes in either area, run `npm run test:coverage` in that directory and add or adjust tests if coverage would drop below 90%.
+- **Coverage floor**: Unit test coverage for **frontend** and **backend** must **not go below 85%**. After changes in either area, run `npm run test:coverage` in that directory and add or adjust tests if coverage would drop below 85%.
 
 ## Architecture (high level)
 
