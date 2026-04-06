@@ -9,6 +9,19 @@ import nodemailer from 'nodemailer';
 import { logger } from './logger';
 
 /**
+ * SMTP_FROM_NAME is sometimes set with surrounding quotes (secret managers, JSON, .env paste).
+ * Strip one pair of outer ASCII double quotes so the From header is not ""Name"".
+ */
+function normalizeSmtpFromName(raw: string | undefined, fallback: string): string {
+  const base = (raw?.trim() || fallback).trim();
+  if (base.length >= 2 && base.startsWith('"') && base.endsWith('"')) {
+    const inner = base.slice(1, -1).trim();
+    return inner.length > 0 ? inner : fallback;
+  }
+  return base.length > 0 ? base : fallback;
+}
+
+/**
  * Format custom message for email HTML
  * Converts plain text line breaks to HTML paragraphs and ensures proper styling
  */
@@ -148,7 +161,10 @@ export const sendPasswordResetEmail = async (
     // SMTP_HIDE_SENDER_EMAIL: If set to "true", attempts to hide the sender email address
     //   Note: Many email providers (especially Gmail) will still show the authenticated email
     //   for security reasons. This is a limitation of email providers, not the application.
-    const fromName = process.env.SMTP_FROM_NAME || 'Performance360';
+    const fromName = normalizeSmtpFromName(
+      process.env.SMTP_FROM_NAME,
+      'Performance360'
+    );
     const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
     const replyTo = process.env.SMTP_REPLY_TO || 'noreply@performance360.com';
     const hideSenderEmail = process.env.SMTP_HIDE_SENDER_EMAIL === 'true';
@@ -308,7 +324,10 @@ export const sendCustomizedEmailWithResetLink = async (
     // SMTP_HIDE_SENDER_EMAIL: If set to "true", attempts to hide the sender email address
     //   Note: Many email providers (especially Gmail) will still show the authenticated email
     //   for security reasons. This is a limitation of email providers, not the application.
-    const fromName = process.env.SMTP_FROM_NAME || 'Performance360';
+    const fromName = normalizeSmtpFromName(
+      process.env.SMTP_FROM_NAME,
+      'Performance360'
+    );
     const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
     const replyTo = process.env.SMTP_REPLY_TO || 'noreply@performance360.com';
     const hideSenderEmail = process.env.SMTP_HIDE_SENDER_EMAIL === 'true';
